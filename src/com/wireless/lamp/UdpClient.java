@@ -29,11 +29,12 @@ public class UdpClient implements Runnable {
 	public void run() {
 		try {
 			DatagramSocket socket = new DatagramSocket(SERVER_PORT);
+			DatagramSocket rcvsocket = new DatagramSocket(12345);
 			socket.setBroadcast(true);
 			socket.setSoTimeout(TIMEOUT_MS);
 
 			sendDiscoveryRequest(socket);
-			listenForResponses(socket);
+			listenForResponses(rcvsocket);
 		} catch (IOException e) {
 			Log.e(TAG, "Could not send discovery request", e);
 		}
@@ -52,7 +53,7 @@ public class UdpClient implements Runnable {
 		// mChallenge, getSignature(mChallenge));
 		// Log.d(TAG, "Sending data " + data);
 
-		String data = new String("\004\b\"\nHello");
+		String data = new String("12345");
 
 		DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
 				getBroadcastAddress(), SERVER_PORT);
@@ -91,8 +92,9 @@ public class UdpClient implements Runnable {
 			while (true) {
 				DatagramPacket packet = new DatagramPacket(buf, buf.length);
 				socket.receive(packet);
-				String s = new String(packet.getData(), 0, packet.getLength());
+				String s = packet.getAddress().getHostAddress(); //new String(packet.getData(), 0, packet.getLength());
 				Log.d(TAG, "Received response " + s);
+				setLampiIp(s);
 			}
 		} catch (SocketTimeoutException e) {
 			Log.d(TAG, "Receive timed out");

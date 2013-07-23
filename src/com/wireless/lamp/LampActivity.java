@@ -42,6 +42,16 @@ public class LampActivity extends Activity {
 		} else {
 			cUdp = new UdpClient(wifi);
 			new Thread(cUdp).start();
+			try {
+				Thread.sleep(2000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			TextView SMSes = (TextView) findViewById(R.id.etName);
+			SMSes.setText(cUdp.getLampiIp());
+			
 			registerReceiver(new SmsReceiver(), new IntentFilter());
 		}
 	}
