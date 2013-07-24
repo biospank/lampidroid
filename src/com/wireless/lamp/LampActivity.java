@@ -10,15 +10,12 @@ import android.content.IntentFilter;
 import android.view.Menu;
 import android.widget.TextView;
 
-import com.wireless.lamp.SmsReceiver;
-
 public class LampActivity extends Activity {
 	
 	private UdpClient cUdp;
 
 	IntentFilter intentFilter;
 	
-	@SuppressWarnings("unused")
 	private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
 
 		@Override
@@ -34,6 +31,9 @@ public class LampActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lamp);
 
+		intentFilter = new IntentFilter();
+		intentFilter.addAction("SMS_RECEIVED_ACTION");
+		
 		// Kickoff the Client
 		Context ctx = this.getApplicationContext();
 		WifiManager wifi = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
@@ -42,17 +42,16 @@ public class LampActivity extends Activity {
 		} else {
 			cUdp = new UdpClient(wifi);
 			new Thread(cUdp).start();
-			try {
-				Thread.sleep(2000);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(2000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
 			
-			TextView SMSes = (TextView) findViewById(R.id.etName);
-			SMSes.setText(cUdp.getLampiIp());
+//			TextView SMSes = (TextView) findViewById(R.id.etName);
+//			SMSes.setText(cUdp.getLampiIp());
 			
-			registerReceiver(new SmsReceiver(), new IntentFilter());
 		}
 	}
 
@@ -62,5 +61,16 @@ public class LampActivity extends Activity {
 		getMenuInflater().inflate(R.menu.lamp, menu);
 		return true;
 	}
+	
+	@Override
+	protected void onResume() {
+		registerReceiver(intentReceiver, intentFilter);
+		super.onResume();
+	}
 
+	@Override
+	protected void onPause() {
+		unregisterReceiver(intentReceiver);
+		super.onPause();
+	}
 }
