@@ -1,12 +1,12 @@
 package com.wireless.lamp;
 
-import android.net.wifi.WifiManager;
-import android.os.Bundle;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.view.Menu;
 import android.widget.TextView;
 
@@ -23,7 +23,10 @@ public class LampActivity extends Activity {
 			//---display the SMS received in the TextView---
 			TextView SMSes = (TextView) findViewById(R.id.etName);
 			SMSes.setText(intent.getExtras().getString("sms"));
+			
+			new HttpNotifyTask().execute(cUdp.getLampiIp());
 		}
+
 	};
 	
 	@Override
