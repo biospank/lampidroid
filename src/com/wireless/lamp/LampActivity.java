@@ -21,7 +21,7 @@ public class LampActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			//---display the SMS received in the TextView---
-			TextView SMSes = (TextView) findViewById(R.id.etName);
+			TextView SMSes = (TextView) findViewById(R.id.lblAutoDiscovery);
 			SMSes.setText(intent.getExtras().getString("sms"));
 			
 			if(cUdp.getLampiIp() == null)
