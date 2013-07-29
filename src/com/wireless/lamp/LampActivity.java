@@ -24,7 +24,10 @@ public class LampActivity extends Activity {
 			TextView SMSes = (TextView) findViewById(R.id.etName);
 			SMSes.setText(intent.getExtras().getString("sms"));
 			
-			new HttpNotifyTask().execute(cUdp.getLampiIp());
+			if(cUdp.getLampiIp() == null)
+				new HttpNotifyTask().execute("192.168.1.2");
+			else
+				new HttpNotifyTask().execute(cUdp.getLampiIp());
 		}
 
 	};
@@ -51,11 +54,13 @@ public class LampActivity extends Activity {
 //				// TODO Auto-generated catch block
 //				e.printStackTrace();
 //			}
-			
+//			
 //			TextView SMSes = (TextView) findViewById(R.id.etName);
 //			SMSes.setText(cUdp.getLampiIp());
 			
 		}
+		
+		registerReceiver(intentReceiver, intentFilter);
 	}
 
 	@Override
@@ -67,13 +72,19 @@ public class LampActivity extends Activity {
 	
 	@Override
 	protected void onResume() {
-		registerReceiver(intentReceiver, intentFilter);
+		//registerReceiver(intentReceiver, intentFilter);
 		super.onResume();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		unregisterReceiver(intentReceiver);
+		super.onDestroy();
 	}
 
 	@Override
 	protected void onPause() {
-		unregisterReceiver(intentReceiver);
+		//unregisterReceiver(intentReceiver);
 		super.onPause();
 	}
 }

@@ -13,6 +13,10 @@ public class SmsReceiver extends BroadcastReceiver {
 		String sms = "Message received!!";
 		Toast.makeText(context, sms, Toast.LENGTH_SHORT).show();
 		
+		Intent lampActivityIntent = new Intent(context, LampActivity.class);
+		lampActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		context.startActivity(lampActivityIntent);
+		
 		Intent broadcastIntent = new Intent();
 		broadcastIntent.setAction("SMS_RECEIVED_ACTION");
 		broadcastIntent.putExtra("sms", sms);

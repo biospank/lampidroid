@@ -21,7 +21,7 @@ public class HttpNotifyTask extends AsyncTask<String, Void, Void> {
 		
 		if(ip != null) {
 			HttpClient httpclient = new DefaultHttpClient();
-			HttpGet get = new HttpGet("http://" + ip + ":" + LAMPI_HTTP_PORT + "/" + LAMPI_CLIENT_NAME);
+			HttpGet get = new HttpGet("http://" + ip + ":" + LAMPI_HTTP_PORT + "/lamp/" + LAMPI_CLIENT_NAME);
 	
 			try {
 				httpclient.execute(get);
