@@ -22,11 +22,11 @@
             android:orientation="horizontal" >
 
             <TextView
-                android:id="@+id/textView1"
+                android:id="@+id/lblAutoDiscovery"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
-                android:text="Large Text"
+                android:textSize="16sp"
                 android:textAppearance="?android:attr/textAppearanceLarge" />
 
             <Button
@@ -35,7 +35,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Button" />
+                android:text="@string/refresh" />
         </LinearLayout>
 
         <LinearLayout
@@ -48,7 +48,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:checked="true"
-                android:text="CheckBox" />
+                android:text="@string/inboundsms" />
 
         </LinearLayout>
 
@@ -62,7 +62,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="@dimen/activity_horizontal_margin"
-                android:text="CheckBox" />
+                android:text="@string/audio" />
 
             <SeekBar
                 android:id="@+id/skbAudio"
@@ -83,7 +83,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="right"
-                android:text="ToggleButton" />
+                android:text="ToggleButton"
+                android:textOff="@string/start"
+                android:textOn="@string/stop" />
 
         </LinearLayout>
 

@@ -8,11 +8,16 @@ import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.Menu;
+import android.widget.Button;
 import android.widget.TextView;
 
 public class LampActivity extends Activity {
 	
 	private UdpClient cUdp;
+	private TextView lblAutoDisovery;
+	private Button btnRefresh;
+
+	private final int aaaa = 5;
 
 	IntentFilter intentFilter;
 	
@@ -21,9 +26,7 @@ public class LampActivity extends Activity {
 		@Override
 		public void onReceive(Context context, Intent intent) {
 			//---display the SMS received in the TextView---
-			TextView SMSes = (TextView) findViewById(R.id.lblAutoDiscovery);
-			SMSes.setText(intent.getExtras().getString("sms"));
-			
+			lblAutoDisovery.setText(intent.getExtras().getString("sms"));
 			if(cUdp.getLampiIp() == null)
 				new HttpNotifyTask().execute("192.168.1.2");
 			else
@@ -36,6 +39,8 @@ public class LampActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lamp);
+
+		initializeView();
 
 		intentFilter = new IntentFilter();
 		intentFilter.addAction("SMS_RECEIVED_ACTION");
@@ -87,4 +92,11 @@ public class LampActivity extends Activity {
 		//unregisterReceiver(intentReceiver);
 		super.onPause();
 	}
+
+	protected void initializeView() {
+		this.lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
+		this.btnRefresh = (Button) findViewById(R.id.btnRefresh);
+		//this.btnRefresh.setText(getString(R.string.refresh));
+	}
+
 }

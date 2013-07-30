@@ -4,5 +4,10 @@
     <string name="app_name">Lamp</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
+    <string name="refresh">Refresh</string>
+    <string name="inboundsms">sms in arrivo</string>
+    <string name="audio">audio</string>
+    <string name="start">Avvia</string>
+    <string name="stop">Interrompi</string>
 
 </resources>
