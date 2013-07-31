@@ -7,17 +7,20 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
-public class LampActivity extends Activity {
+public class LampActivity extends Activity implements OnTaskCompleted {
 	
 	private UdpClient cUdp;
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
+	private ToggleButton tglLamp;
 
-	private final int aaaa = 5;
 
 	IntentFilter intentFilter;
 	
@@ -41,18 +44,19 @@ public class LampActivity extends Activity {
 		setContentView(R.layout.activity_lamp);
 
 		initializeView();
-
-		intentFilter = new IntentFilter();
-		intentFilter.addAction("SMS_RECEIVED_ACTION");
 		
+
 		// Kickoff the Client
 		Context ctx = this.getApplicationContext();
 		WifiManager wifi = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
 		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
 			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
 		} else {
-			cUdp = new UdpClient(wifi);
-			new Thread(cUdp).start();
+			new UdpClientTask(wifi).execute();
+
+//			cUdp = new UdpClient(wifi);
+//			new Thread(cUdp).start();
+			
 //			try {
 //				Thread.sleep(2000);
 //			} catch (InterruptedException e) {
@@ -65,7 +69,7 @@ public class LampActivity extends Activity {
 			
 		}
 		
-		registerReceiver(intentReceiver, intentFilter);
+
 	}
 
 	@Override
@@ -94,9 +98,35 @@ public class LampActivity extends Activity {
 	}
 
 	protected void initializeView() {
-		this.lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
-		this.btnRefresh = (Button) findViewById(R.id.btnRefresh);
+		lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
+		btnRefresh = (Button) findViewById(R.id.btnRefresh);
+		tglLamp = (ToggleButton) findViewById(R.id.tglLamp);
+
+		intentFilter = new IntentFilter();
+		intentFilter.addAction("SMS_RECEIVED_ACTION");
+		
+		tglLamp.setOnClickListener(new ToggleButton.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(((ToggleButton)v).isChecked()) {
+					//Log.d("tglLamp", "Button enabled");
+					registerReceiver(intentReceiver, intentFilter);
+				} else {
+					//Log.d("tglLamp", "Button disabled");
+					unregisterReceiver(intentReceiver);
+				}
+				lblAutoDisovery.setText("");
+			}
+			
+		});
 		//this.btnRefresh.setText(getString(R.string.refresh));
+	}
+
+	@Override
+	public void onTaskCompleted() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

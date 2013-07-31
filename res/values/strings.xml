@@ -6,7 +6,7 @@
     <string name="hello_world">Hello world!</string>
     <string name="refresh">Refresh</string>
     <string name="inboundsms">sms in arrivo</string>
-    <string name="audio">audio</string>
+    <string name="audiosensor">sensore audio</string>
     <string name="start">Avvia</string>
     <string name="stop">Interrompi</string>
 
