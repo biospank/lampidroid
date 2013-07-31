@@ -16,7 +16,7 @@ import android.widget.ToggleButton;
 
 public class LampActivity extends Activity implements OnTaskCompleted {
 	
-	private UdpClient cUdp;
+	private UdpClientTask cUdp;
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
 	private ToggleButton tglLamp;
@@ -52,7 +52,8 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
 			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
 		} else {
-			new UdpClientTask(wifi).execute();
+			cUdp = new UdpClientTask(wifi);
+			cUdp.execute();
 
 //			cUdp = new UdpClient(wifi);
 //			new Thread(cUdp).start();
@@ -125,7 +126,14 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 
 	@Override
 	public void onTaskCompleted() {
-		// TODO Auto-generated method stub
+		String ip = cUdp.getLampiIp();
+		if(ip == null) {
+			Log.d("task completed", "no device found!!");
+			lblAutoDisovery.setText("Lamp device not found!!");
+		} else {
+			Log.d("task completed", "device found!!");
+			lblAutoDisovery.setText("raspi ip: " + ip);
+		}
 		
 	}
 
