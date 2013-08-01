@@ -39,6 +39,19 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 	};
 	
 	@Override
+	public void onTaskCompleted() {
+		String ip = cUdp.getLampiIp();
+		if(ip == null) {
+			Log.d("task completed", "no device found!!");
+			lblAutoDisovery.setText("Lamp device not found!!");
+		} else {
+			Log.d("task completed", "device found!!");
+			lblAutoDisovery.setText("raspi ip: " + ip);
+		}
+		
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_lamp);
@@ -52,22 +65,9 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
 			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
 		} else {
-			cUdp = new UdpClientTask(wifi);
+			cUdp = new UdpClientTask(wifi, this);
 			cUdp.execute();
 
-//			cUdp = new UdpClient(wifi);
-//			new Thread(cUdp).start();
-			
-//			try {
-//				Thread.sleep(2000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//			
-//			TextView SMSes = (TextView) findViewById(R.id.etName);
-//			SMSes.setText(cUdp.getLampiIp());
-			
 		}
 		
 
@@ -88,7 +88,7 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 	
 	@Override
 	protected void onDestroy() {
-		unregisterReceiver(intentReceiver);
+		//unregisterReceiver(intentReceiver);
 		super.onDestroy();
 	}
 
@@ -122,19 +122,6 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 			
 		});
 		//this.btnRefresh.setText(getString(R.string.refresh));
-	}
-
-	@Override
-	public void onTaskCompleted() {
-		String ip = cUdp.getLampiIp();
-		if(ip == null) {
-			Log.d("task completed", "no device found!!");
-			lblAutoDisovery.setText("Lamp device not found!!");
-		} else {
-			Log.d("task completed", "device found!!");
-			lblAutoDisovery.setText("raspi ip: " + ip);
-		}
-		
 	}
 
 }

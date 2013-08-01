@@ -14,13 +14,15 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 
 	private static final String TAG = "Discovery";
 	private static final int SERVER_PORT = 1234;
-	private static final int TIMEOUT_MS = 500;
+	private static final int TIMEOUT_REQUEST = 500;
+	private static final int TIMEOUT_RESPONSE = 5000;
 	private WifiManager mWifi;
 	private String lampiIp;
 	private OnTaskCompleted listener;
 
-	UdpClientTask(WifiManager wifi) {
+	UdpClientTask(WifiManager wifi, OnTaskCompleted listener) {
 	  mWifi = wifi;
+	  this.listener = listener;
 	}
 
 	@Override
@@ -28,8 +30,9 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		try {
 			DatagramSocket socket = new DatagramSocket(SERVER_PORT);
 			DatagramSocket rcvsocket = new DatagramSocket(12345);
+			rcvsocket.setSoTimeout(TIMEOUT_RESPONSE);
 			socket.setBroadcast(true);
-			socket.setSoTimeout(TIMEOUT_MS);
+			socket.setSoTimeout(TIMEOUT_REQUEST);
 
 			sendDiscoveryRequest(socket);
 			listenForResponses(rcvsocket);
@@ -40,7 +43,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	}
 	
 	protected void onPostExecute(Void arg0) {
-		listener.onTaskCompleted();
+		this.listener.onTaskCompleted();
 	}
 
 	/**
