@@ -7,7 +7,7 @@
     <string name="refresh">Refresh</string>
     <string name="inboundsms">sms in arrivo</string>
     <string name="audiosensor">sensore audio</string>
-    <string name="start">Avvia</string>
+    <string name="test">Test</string>
     <string name="stop">Interrompi</string>
 
 </resources>

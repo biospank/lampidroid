@@ -39,6 +39,7 @@
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
+        <service android:enabled="true" android:name=".AudioCaptureService"></service>    
     </application>
 
 </manifest>

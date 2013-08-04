@@ -19,6 +19,8 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	private WifiManager mWifi;
 	private String lampiIp;
 	private OnTaskCompleted listener;
+	private DatagramSocket socket;
+	private DatagramSocket rcvsocket;
 
 	UdpClientTask(WifiManager wifi, OnTaskCompleted listener) {
 	  mWifi = wifi;
@@ -28,8 +30,8 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	@Override
 	protected Void doInBackground(Void... arg0) {
 		try {
-			DatagramSocket socket = new DatagramSocket(SERVER_PORT);
-			DatagramSocket rcvsocket = new DatagramSocket(12345);
+			socket = new DatagramSocket(SERVER_PORT);
+			rcvsocket = new DatagramSocket(12345);
 			rcvsocket.setSoTimeout(TIMEOUT_RESPONSE);
 			socket.setBroadcast(true);
 			socket.setSoTimeout(TIMEOUT_REQUEST);
@@ -38,6 +40,9 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 			listenForResponses(rcvsocket);
 		} catch (IOException e) {
 			Log.e(TAG, "Could not send discovery request", e);
+		} finally {
+			socket.close();
+			rcvsocket.close();
 		}
 		return null;
 	}
@@ -101,6 +106,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 				String s = packet.getAddress().getHostAddress(); //new String(packet.getData(), 0, packet.getLength());
 				Log.d(TAG, "Received response " + s);
 				setLampiIp(s);
+				
 			}
 		} catch (SocketTimeoutException e) {
 			Log.d(TAG, "Receive timed out");

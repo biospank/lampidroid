@@ -1,16 +1,23 @@
 package com.wireless.lamp;
 
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.database.Cursor;
+import android.media.MediaRecorder;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
@@ -19,8 +26,12 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 	private UdpClientTask cUdp;
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
-	private ToggleButton tglLamp;
-
+	private Button btnTest;
+	private CheckBox chkSms;
+	// gestione audio
+	// private CheckBox chkAudio;
+	//private Intent audioCaptureIntent;
+	
 
 	IntentFilter intentFilter;
 	
@@ -30,10 +41,15 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 		public void onReceive(Context context, Intent intent) {
 			//---display the SMS received in the TextView---
 			lblAutoDisovery.setText(intent.getExtras().getString("sms"));
-			if(cUdp.getLampiIp() == null)
-				new HttpNotifyTask().execute("192.168.1.2");
-			else
-				new HttpNotifyTask().execute(cUdp.getLampiIp());
+			if(cUdp.getLampiIp() == null) {
+				if(chkSms.isChecked()) {
+					new HttpNotifyTask().execute("192.168.1.2");
+				}
+			} else {
+				if(chkSms.isChecked()) {
+					new HttpNotifyTask().execute(cUdp.getLampiIp());
+				}
+			}
 		}
 
 	};
@@ -58,18 +74,9 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 
 		initializeView();
 		
-
-		// Kickoff the Client
-		Context ctx = this.getApplicationContext();
-		WifiManager wifi = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
-		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
-			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
-		} else {
-			cUdp = new UdpClientTask(wifi, this);
-			cUdp.execute();
-
-		}
+		launchUdpTask();
 		
+
 
 	}
 
@@ -83,45 +90,100 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 	@Override
 	protected void onResume() {
 		//registerReceiver(intentReceiver, intentFilter);
+		// gestione audio
+		// startService(audioCaptureIntent);
 		super.onResume();
 	}
 	
 	@Override
 	protected void onDestroy() {
-		//unregisterReceiver(intentReceiver);
+		unregisterReceiver(intentReceiver);
 		super.onDestroy();
 	}
 
 	@Override
 	protected void onPause() {
 		//unregisterReceiver(intentReceiver);
+		// gestione audio
+		// stopService(audioCaptureIntent);
 		super.onPause();
+		
 	}
 
 	protected void initializeView() {
 		lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
-		tglLamp = (ToggleButton) findViewById(R.id.tglLamp);
+		chkSms = (CheckBox) findViewById(R.id.chkSms);
+		btnTest = (Button) findViewById(R.id.btnTest);
+		
+
+		// gestione audio
+//		chkAudio = (CheckBox) findViewById(R.id.chkAudio);
+//		audioCaptureIntent =  new Intent(this, AudioCaptureService.class);
 
 		intentFilter = new IntentFilter();
 		intentFilter.addAction("SMS_RECEIVED_ACTION");
 		
-		tglLamp.setOnClickListener(new ToggleButton.OnClickListener() {
+		registerReceiver(intentReceiver, intentFilter);
+		
+//		chkAudio.setOnClickListener(new OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				if(((CheckBox)v).isChecked()) {
+//					Log.d("chkAudio", "Check enabled");
+//					// Explicitly start AudioCaptureService 
+//					startService(audioCaptureIntent);
+//				} else {
+//					Log.d("chkAudio", "Check disabled");
+//					stopService(audioCaptureIntent);
+//				}
+//			}
+//		});
+		
+		btnTest.setOnClickListener(new Button.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				if(((ToggleButton)v).isChecked()) {
-					//Log.d("tglLamp", "Button enabled");
-					registerReceiver(intentReceiver, intentFilter);
+				if(cUdp.getLampiIp() == null) {
+					if(chkSms.isChecked()) {
+						new HttpNotifyTask().execute("192.168.1.2");
+					}
 				} else {
-					//Log.d("tglLamp", "Button disabled");
-					unregisterReceiver(intentReceiver);
+					if(chkSms.isChecked()) {
+						new HttpNotifyTask().execute(cUdp.getLampiIp());
+					}
 				}
-				lblAutoDisovery.setText("");
+				
 			}
 			
 		});
-		//this.btnRefresh.setText(getString(R.string.refresh));
+
+		btnRefresh.setOnClickListener(new Button.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				launchUdpTask();
+				
+			}
+			
+		});
+
+	}
+	
+	private void launchUdpTask() {
+		
+		// Kickoff the Client
+		Context ctx = this.getApplicationContext();
+		WifiManager wifi = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
+			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+		} else {
+			cUdp = new UdpClientTask(wifi, this);
+			cUdp.execute();
+
+		}
+		
 	}
 
 }
