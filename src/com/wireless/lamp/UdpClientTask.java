@@ -18,11 +18,11 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	private static final int TIMEOUT_RESPONSE = 5000;
 	private WifiManager mWifi;
 	private String lampiIp;
-	private OnTaskCompleted listener;
+	private OnTaskListener listener;
 	private DatagramSocket socket;
 	private DatagramSocket rcvsocket;
 
-	UdpClientTask(WifiManager wifi, OnTaskCompleted listener) {
+	UdpClientTask(WifiManager wifi, OnTaskListener listener) {
 	  mWifi = wifi;
 	  this.listener = listener;
 	}
@@ -47,6 +47,10 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		return null;
 	}
 	
+	protected void onPreExecute() {
+		this.listener.onTaskBegin();
+	}
+
 	protected void onPostExecute(Void arg0) {
 		this.listener.onTaskCompleted();
 	}

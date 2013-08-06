@@ -1,33 +1,28 @@
 package com.wireless.lamp;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.database.Cursor;
-import android.media.MediaRecorder;
-import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.ToggleButton;
 
-public class LampActivity extends Activity implements OnTaskCompleted {
+public class LampActivity extends Activity implements OnTaskListener {
 	
 	private UdpClientTask cUdp;
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
 	private Button btnTest;
 	private CheckBox chkSms;
+	private ProgressBar prgUdp;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
@@ -41,21 +36,23 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 		public void onReceive(Context context, Intent intent) {
 			//---display the SMS received in the TextView---
 			lblAutoDisovery.setText(intent.getExtras().getString("sms"));
-			if(cUdp.getLampiIp() == null) {
-				if(chkSms.isChecked()) {
-					new HttpNotifyTask().execute("192.168.1.2");
-				}
-			} else {
-				if(chkSms.isChecked()) {
-					new HttpNotifyTask().execute(cUdp.getLampiIp());
-				}
-			}
+			launchHttpTask();
 		}
 
 	};
 	
 	@Override
+	public void onTaskBegin() {
+		lblAutoDisovery.setVisibility(View.INVISIBLE);
+		prgUdp.setVisibility(View.VISIBLE);
+		
+	}
+	
+	@Override
 	public void onTaskCompleted() {
+		prgUdp.setVisibility(View.GONE);
+		lblAutoDisovery.setVisibility(View.VISIBLE);
+
 		String ip = cUdp.getLampiIp();
 		if(ip == null) {
 			Log.d("task completed", "no device found!!");
@@ -115,6 +112,7 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		chkSms = (CheckBox) findViewById(R.id.chkSms);
 		btnTest = (Button) findViewById(R.id.btnTest);
+		prgUdp = (ProgressBar) findViewById(R.id.prgUdp);
 		
 
 		// gestione audio
@@ -145,16 +143,7 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 			
 			@Override
 			public void onClick(View v) {
-				if(cUdp.getLampiIp() == null) {
-					if(chkSms.isChecked()) {
-						new HttpNotifyTask().execute("192.168.1.2");
-					}
-				} else {
-					if(chkSms.isChecked()) {
-						new HttpNotifyTask().execute(cUdp.getLampiIp());
-					}
-				}
-				
+				launchHttpTask();
 			}
 			
 		});
@@ -184,6 +173,19 @@ public class LampActivity extends Activity implements OnTaskCompleted {
 
 		}
 		
+	}
+	
+	private void launchHttpTask() {
+		
+		if(cUdp.getLampiIp() == null) {
+			if(chkSms.isChecked()) {
+				new HttpNotifyTask().execute("192.168.1.2");
+			}
+		} else {
+			if(chkSms.isChecked()) {
+				new HttpNotifyTask().execute(cUdp.getLampiIp());
+			}
+		}
 	}
 
 }
