@@ -9,5 +9,6 @@
     <string name="audiosensor">sensore audio</string>
     <string name="test">Test</string>
     <string name="stop">Interrompi</string>
+    <string name="alarm">sveglia</string>
 
 </resources>

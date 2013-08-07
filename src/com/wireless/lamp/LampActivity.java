@@ -1,6 +1,8 @@
 package com.wireless.lamp;
 
 import android.app.Activity;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +16,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 public class LampActivity extends Activity implements OnTaskListener {
 	
@@ -23,12 +27,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private Button btnTest;
 	private CheckBox chkSms;
 	private ProgressBar prgUdp;
+	private CheckBox chkAlarm;
+	private TimePicker tpkAlarm;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
 	
 
 	IntentFilter intentFilter;
+	IntentFilter alarmFilter;
+	Intent alarmIntent;
+	PendingIntent pendingAlarm;
 	
 	private BroadcastReceiver intentReceiver = new BroadcastReceiver() {
 
@@ -37,6 +46,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 			//---display the SMS received in the TextView---
 			lblAutoDisovery.setText(intent.getExtras().getString("sms"));
 			launchHttpTask();
+		}
+
+	};
+	
+	private BroadcastReceiver alarmReceiver = new BroadcastReceiver() {
+
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			Toast.makeText(context, "Rise and Shine!", Toast.LENGTH_SHORT).show();
 		}
 
 	};
@@ -95,6 +113,8 @@ public class LampActivity extends Activity implements OnTaskListener {
 	@Override
 	protected void onDestroy() {
 		unregisterReceiver(intentReceiver);
+		unregisterReceiver(alarmReceiver);
+		deactivateAlarm(pendingAlarm);
 		super.onDestroy();
 	}
 
@@ -111,8 +131,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 		lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		chkSms = (CheckBox) findViewById(R.id.chkSms);
+		tpkAlarm = (TimePicker) findViewById(R.id.tpkAlarm);
 		btnTest = (Button) findViewById(R.id.btnTest);
 		prgUdp = (ProgressBar) findViewById(R.id.prgUdp);
+		chkAlarm = (CheckBox) findViewById(R.id.chkAlarm);
 		
 
 		// gestione audio
@@ -122,7 +144,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 		intentFilter = new IntentFilter();
 		intentFilter.addAction("SMS_RECEIVED_ACTION");
 		
+		alarmIntent = new Intent("ALARM_ACTION");
+		alarmFilter = new IntentFilter("ALARM_ACTION");
+		
 		registerReceiver(intentReceiver, intentFilter);
+		registerReceiver(alarmReceiver, alarmFilter);
 		
 //		chkAudio.setOnClickListener(new OnClickListener() {
 //			
@@ -139,6 +165,21 @@ public class LampActivity extends Activity implements OnTaskListener {
 //			}
 //		});
 		
+		pendingAlarm = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
+
+		chkAlarm.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(((CheckBox)v).isChecked()) {
+					activateAlarm(pendingAlarm);
+				} else {
+					deactivateAlarm(pendingAlarm);
+				}
+				
+			}
+		});
+	
 		btnTest.setOnClickListener(new Button.OnClickListener() {
 			
 			@Override
@@ -163,8 +204,8 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private void launchUdpTask() {
 		
 		// Kickoff the Client
-		Context ctx = this.getApplicationContext();
-		WifiManager wifi = (WifiManager) ctx.getSystemService(Context.WIFI_SERVICE);
+		//Context ctx = this.getApplicationContext();
+		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
 		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
 			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
 		} else {
@@ -173,6 +214,22 @@ public class LampActivity extends Activity implements OnTaskListener {
 
 		}
 		
+	}
+	
+	private void activateAlarm(PendingIntent alarmIntent) {
+		
+		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		int alarmType = AlarmManager.RTC_WAKEUP;
+		// Trigger the device in 10 seconds
+		long timeOrLengthOfWait = 10000;
+		
+		alarmManager.setInexactRepeating(alarmType, timeOrLengthOfWait, timeOrLengthOfWait, alarmIntent);
+		
+	}
+	
+	private void deactivateAlarm(PendingIntent alarmIntent) {
+		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+		alarmManager.cancel(alarmIntent);
 	}
 	
 	private void launchHttpTask() {
