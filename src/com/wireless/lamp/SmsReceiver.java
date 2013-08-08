@@ -18,7 +18,7 @@ public class SmsReceiver extends BroadcastReceiver {
 		context.startActivity(lampActivityIntent);
 		
 		Intent broadcastIntent = new Intent();
-		broadcastIntent.setAction("SMS_RECEIVED_ACTION");
+		broadcastIntent.setAction(LampActivity.SMS_LAMP_ACTION);
 		broadcastIntent.putExtra("sms", sms);
 		context.sendBroadcast(broadcastIntent);
 		

@@ -21,6 +21,8 @@ import android.widget.Toast;
 
 public class LampActivity extends Activity implements OnTaskListener {
 	
+	public static final String SMS_LAMP_ACTION = "SMS_LAMP_ACTION";
+	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
 	private UdpClientTask cUdp;
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
@@ -35,7 +37,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 	
 
 	IntentFilter intentFilter;
-	IntentFilter alarmFilter;
 	Intent alarmIntent;
 	PendingIntent pendingAlarm;
 	
@@ -43,18 +44,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			//---display the SMS received in the TextView---
-			lblAutoDisovery.setText(intent.getExtras().getString("sms"));
-			launchHttpTask();
-		}
-
-	};
-	
-	private BroadcastReceiver alarmReceiver = new BroadcastReceiver() {
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			Toast.makeText(context, "Rise and Shine!", Toast.LENGTH_SHORT).show();
+			if(intent.getAction() == SMS_LAMP_ACTION) {
+				//---display the SMS received in the TextView---
+				lblAutoDisovery.setText(intent.getExtras().getString("sms"));
+				launchHttpTask();
+				
+			}
+			if(intent.getAction() == ALARM_LAMP_ACTION) {
+				Toast.makeText(context, "Rise and Shine!", Toast.LENGTH_SHORT).show();
+				
+			}
+				
 		}
 
 	};
@@ -113,7 +113,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	@Override
 	protected void onDestroy() {
 		unregisterReceiver(intentReceiver);
-		unregisterReceiver(alarmReceiver);
+		//unregisterReceiver(alarmReceiver);
 		deactivateAlarm(pendingAlarm);
 		super.onDestroy();
 	}
@@ -142,13 +142,13 @@ public class LampActivity extends Activity implements OnTaskListener {
 //		audioCaptureIntent =  new Intent(this, AudioCaptureService.class);
 
 		intentFilter = new IntentFilter();
-		intentFilter.addAction("SMS_RECEIVED_ACTION");
+		intentFilter.addAction(SMS_LAMP_ACTION);
+		intentFilter.addAction(ALARM_LAMP_ACTION);
 		
-		alarmIntent = new Intent("ALARM_ACTION");
-		alarmFilter = new IntentFilter("ALARM_ACTION");
+		//alarmFilter = new IntentFilter("ALARM_ACTION");
 		
 		registerReceiver(intentReceiver, intentFilter);
-		registerReceiver(alarmReceiver, alarmFilter);
+		//registerReceiver(alarmReceiver, alarmFilter);
 		
 //		chkAudio.setOnClickListener(new OnClickListener() {
 //			
@@ -165,6 +165,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 //			}
 //		});
 		
+		alarmIntent = new Intent(ALARM_LAMP_ACTION);
 		pendingAlarm = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 
 		chkAlarm.setOnClickListener(new View.OnClickListener() {
@@ -219,9 +220,9 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private void activateAlarm(PendingIntent alarmIntent) {
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		int alarmType = AlarmManager.RTC_WAKEUP;
-		// Trigger the device in 10 seconds
-		long timeOrLengthOfWait = 10000;
+		int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+		// Trigger the device in 20 seconds
+		long timeOrLengthOfWait = 20000;
 		
 		alarmManager.setInexactRepeating(alarmType, timeOrLengthOfWait, timeOrLengthOfWait, alarmIntent);
 		
