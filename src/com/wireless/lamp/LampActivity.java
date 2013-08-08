@@ -7,10 +7,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -23,7 +26,8 @@ public class LampActivity extends Activity implements OnTaskListener {
 	
 	public static final String SMS_LAMP_ACTION = "SMS_LAMP_ACTION";
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
-	private UdpClientTask cUdp;
+	private static final int RESULT_SETTINGS = 1;
+    private UdpClientTask cUdp;
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
 	private Button btnTest;
@@ -90,8 +94,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 		initializeView();
 		
 		launchUdpTask();
-		
-
 
 	}
 
@@ -99,10 +101,38 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.lamp, menu);
+		getMenuInflater().inflate(R.menu.settings, menu);
 		return true;
 	}
 	
-	@Override
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+ 
+        case R.id.menu_settings:
+            Intent settingsIntent = new Intent(this, LampSettingsActivity.class);
+            startActivityForResult(settingsIntent, RESULT_SETTINGS);
+            break;
+ 
+        }
+ 
+        return true;
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+ 
+        switch (requestCode) {
+        case RESULT_SETTINGS:
+            showUserSettings();
+            break;
+ 
+        }
+ 
+    }
+
+    @Override
 	protected void onResume() {
 		//registerReceiver(intentReceiver, intentFilter);
 		// gestione audio
@@ -245,5 +275,25 @@ public class LampActivity extends Activity implements OnTaskListener {
 			}
 		}
 	}
+
+	private void showUserSettings() {
+        SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+ 
+        StringBuilder builder = new StringBuilder();
+ 
+//        builder.append("\n Username: "
+//                + sharedPrefs.getString("prefUsername", "NULL"));
+ 
+        builder.append("\n Inbound Sms:"
+                + sharedPrefs.getBoolean("pref_key_inbound_sms", false));
+ 
+//        builder.append("\n Sync Frequency: "
+//                + sharedPrefs.getString("prefSyncFrequency", "NULL"));
+ 
+        TextView settingsTextView = (TextView) findViewById(R.id.lblAutoDiscovery);
+ 
+        settingsTextView.setText(builder.toString());
+    }
 
 }
