@@ -37,38 +37,50 @@ public class TimePickerPreference extends DialogPreference {
 		
 	    // When the user selects "OK", persist the new value
 	    if (positiveResult) {
-	    	setAlarm(editor);
+	    	displayAlarm(editor, true);
 	
 	    } else {
-	    	unsetAlarm(editor);
+	    	displayAlarm(editor, false);
 	    }
 
 		editor.apply();
 
 	}
 	
-	private void unsetAlarm(Editor editor) {
-		editor.remove("pref_key_alarm");
-		
-	}
-
-	private void setAlarm(SharedPreferences.Editor editor) {
-		Integer hour = tpkAlarm.getCurrentHour();
-		Integer minute = tpkAlarm.getCurrentMinute();
-
-		Calendar cal = Calendar.getInstance();
-		cal.set(Calendar.HOUR_OF_DAY, hour);
-		cal.set(Calendar.MINUTE, minute);
-		cal.set(Calendar.SECOND, 0);
-		cal.set(Calendar.MILLISECOND, 0);
-		
-		editor.putLong("pref_key_alarm", cal.getTimeInMillis());
+	private void displayAlarm(SharedPreferences.Editor editor, boolean display) {
+		if(display) {
+			Integer hour = tpkAlarm.getCurrentHour();
+			Integer minute = tpkAlarm.getCurrentMinute();
+	
+			Calendar cal = Calendar.getInstance();
+			cal.set(Calendar.HOUR_OF_DAY, hour);
+			cal.set(Calendar.MINUTE, minute);
+			cal.set(Calendar.SECOND, 0);
+			cal.set(Calendar.MILLISECOND, 0);
+			
+			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, cal.getTimeInMillis());
+		} else {
+			editor.remove(LampSettingsActivity.ALARM_KEY_PREF);
+		}
 	}
 
 	@Override
     public void onBindDialogView(View view){
+		SharedPreferences sharedPrefs = PreferenceManager
+	            .getDefaultSharedPreferences(mContext);
 		tpkAlarm = (TimePicker)view.findViewById(R.id.tpkAlarm);
 		tpkAlarm.setIs24HourView(true);
+
+		long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+
+		if(timeSet > 0) {
+			Calendar cal = Calendar.getInstance();
+			cal.setTimeInMillis(timeSet);
+			tpkAlarm.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));
+			tpkAlarm.setCurrentMinute(cal.get(Calendar.MINUTE));
+		}
+		
+		
         super.onBindDialogView(view);
     }	
 	

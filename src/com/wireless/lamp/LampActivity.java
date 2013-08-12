@@ -1,5 +1,7 @@
 package com.wireless.lamp;
 
+import java.util.Calendar;
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -135,9 +137,19 @@ public class LampActivity extends Activity implements OnTaskListener {
     }
 
     private void manageUserSettings() {
-    	long timeMillis = sharedPrefs.getLong("pref_key_alarm", 0);
-    	if(timeMillis > 0) {
-    		activateAlarm(pendingAlarm, timeMillis);
+    	long currentTime = System.currentTimeMillis();
+    	long timeSet = sharedPrefs.getLong("pref_key_alarm", 0);
+    	if(timeSet > 0) {
+    		long timeAlarm;
+    		if(currentTime >= timeSet){
+    			Calendar c = Calendar.getInstance();
+    			c.setTimeInMillis(timeSet);
+    			c.add(Calendar.DATE, 1);
+    			timeAlarm = c.getTimeInMillis();
+    		} else {
+    			timeAlarm = timeSet; 
+    		}
+    		activateAlarm(pendingAlarm, timeAlarm);
     	} else {
     		deactivateAlarm(pendingAlarm);
     	}

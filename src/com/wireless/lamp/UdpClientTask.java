@@ -15,7 +15,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	private static final String TAG = "Discovery";
 	private static final int SERVER_PORT = 1234;
 	private static final int TIMEOUT_REQUEST = 500;
-	private static final int TIMEOUT_RESPONSE = 5000;
+	private static final int TIMEOUT_RESPONSE = 2000;
 	private WifiManager mWifi;
 	private String lampiIp;
 	private OnTaskListener listener;

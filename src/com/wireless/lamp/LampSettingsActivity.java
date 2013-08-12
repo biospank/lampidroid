@@ -5,21 +5,14 @@ package com.wireless.lamp;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.Set;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.Preference;
-import android.preference.Preference.OnPreferenceClickListener;
+import android.preference.PreferenceManager;
 import android.preference.PreferenceActivity;
-import android.util.Log;
-import android.view.View;
-import android.widget.ListView;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 
@@ -31,6 +24,8 @@ public class LampSettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
 	private static final int PICK_CONTACT = 1001;
+	public static final String ALARM_KEY_PREF = "pref_key_alarm";
+	public static final String CONTACT_KEY_PREF = "pref_key_inbound_sms_contact";
 	
 //	@Override
 //	public boolean onPreferenceClick(Preference pref) {
@@ -54,7 +49,18 @@ public class LampSettingsActivity extends PreferenceActivity implements
         Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 		contactPickerIntent.setType(Phone.CONTENT_TYPE);
         contactPref.setIntent(contactPickerIntent);
-    }
+
+        SharedPreferences sharedPrefs = PreferenceManager
+	            .getDefaultSharedPreferences(this);
+        Preference alarmPref = findPreference(ALARM_KEY_PREF);
+        long timeSet = sharedPrefs.getLong(ALARM_KEY_PREF, 0);
+        if(timeSet == 0)
+        	showSummary(alarmPref, null, false);
+        else
+        	showSummary(alarmPref, timeSet, true);
+        
+        	
+	}
 	
 	@Override
 	protected void onResume() {
@@ -73,23 +79,30 @@ public class LampSettingsActivity extends PreferenceActivity implements
 	// da implementare al cambio valore
 	@Override
 	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-		if(key.equals("pref_key_inbound_sms_contact")) {
+		if(key.equals(CONTACT_KEY_PREF)) {
 //			Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 //			startActivityForResult(contactPickerIntent, PICK_CONTACT);
 		}
-		if(key.equals("pref_key_alarm")) {
+		if(key.equals(ALARM_KEY_PREF)) {
 	        Preference alarmPref = findPreference(key);
-	        long timeMillis = sharedPreferences.getLong(key, 0);
-	        if(timeMillis == 0) {
-	        	alarmPref.setSummary("Nessuna notifica ");
-	        } else {
-		        Date date = new Date(timeMillis);
-		        DateFormat formatter = new SimpleDateFormat("HH:mm");
-		        String dateFormatted = formatter.format(date);
-				alarmPref.setSummary("Notifica alle ore: " + dateFormatted);
-	        }
+	        long timeSet = sharedPreferences.getLong(key, 0);
+	        if(timeSet == 0)
+	        	showSummary(alarmPref, null, false);
+	        else
+	        	showSummary(alarmPref, timeSet, true);
 		}
 		
+	}
+	
+	private void showSummary(Preference pref, Long timeSet, boolean show) {
+		if(show) {
+	        Date date = new Date(timeSet);
+	        DateFormat formatter = new SimpleDateFormat("HH:mm");
+	        String dateFormatted = formatter.format(date);
+	        pref.setSummary("Notifica alle ore: " + dateFormatted);
+		} else {
+	        pref.setSummary("Nessuna notifica");
+		}
 	}
 
 	
