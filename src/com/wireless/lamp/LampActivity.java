@@ -51,6 +51,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 		public void onReceive(Context context, Intent intent) {
 //			Log.d("onReceive", intent.getAction());
 //			Log.d("onReceive", String.valueOf(intent.getAction().equals(SMS_LAMP_ACTION)));
+
+			Intent lampActivityIntent = new Intent(context, LampActivity.class);
+			lampActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			context.startActivity(lampActivityIntent);
+			
 			if(intent.getAction().equals(SMS_LAMP_ACTION)) {
 				//---display the SMS received in the TextView---
 				lblAutoDisovery.setText(intent.getExtras().getString("sms"));
