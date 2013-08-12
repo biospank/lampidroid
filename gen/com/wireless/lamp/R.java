@@ -24,21 +24,21 @@ public final class R {
         public static final int lamp=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f09000a;
+        public static final int action_settings=0x7f090009;
         public static final int btnRefresh=0x7f090003;
-        public static final int btnTest=0x7f090009;
-        public static final int chkAlarm=0x7f090005;
-        public static final int chkAudio=0x7f090007;
+        public static final int btnTest=0x7f090007;
+        public static final int chkAudio=0x7f090005;
         public static final int chkSms=0x7f090004;
         public static final int lblAutoDiscovery=0x7f090001;
         public static final int linearLayout=0x7f090000;
-        public static final int menu_settings=0x7f09000b;
+        public static final int menu_settings=0x7f09000a;
         public static final int prgUdp=0x7f090002;
-        public static final int skbAudio=0x7f090008;
-        public static final int tpkAlarm=0x7f090006;
+        public static final int skbAudio=0x7f090006;
+        public static final int tpkAlarm=0x7f090008;
     }
     public static final class layout {
         public static final int activity_lamp=0x7f030000;
+        public static final int timepicker_dialog=0x7f030001;
     }
     public static final class menu {
         public static final int lamp=0x7f080000;
@@ -53,8 +53,15 @@ public final class R {
         public static final int inboundsms=0x7f060004;
         public static final int menu_settings=0x7f06000c;
         public static final int phone=0x7f060009;
+        public static final int pref_contact_dialog_message=0x7f060011;
+        public static final int pref_diaog_negative_button_text=0x7f060013;
+        public static final int pref_diaog_positive_button_text=0x7f060012;
+        public static final int pref_summary_alarm=0x7f060010;
         public static final int pref_summary_inbound_sms=0x7f06000b;
+        public static final int pref_summary_inbound_sms_contact=0x7f06000e;
+        public static final int pref_title_alarm=0x7f06000f;
         public static final int pref_title_inbound_sms=0x7f06000a;
+        public static final int pref_title_inbound_sms_contact=0x7f06000d;
         public static final int refresh=0x7f060003;
         public static final int stop=0x7f060007;
         public static final int test=0x7f060006;

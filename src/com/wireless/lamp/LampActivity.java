@@ -33,12 +33,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private Button btnTest;
 	private CheckBox chkSms;
 	private ProgressBar prgUdp;
-	private CheckBox chkAlarm;
-	private TimePicker tpkAlarm;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
 	
+	SharedPreferences sharedPrefs;
 
 	IntentFilter intentFilter;
 	Intent alarmIntent;
@@ -48,14 +47,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 
 		@Override
 		public void onReceive(Context context, Intent intent) {
-			if(intent.getAction() == SMS_LAMP_ACTION) {
+//			Log.d("onReceive", intent.getAction());
+//			Log.d("onReceive", String.valueOf(intent.getAction().equals(SMS_LAMP_ACTION)));
+			if(intent.getAction().equals(SMS_LAMP_ACTION)) {
 				//---display the SMS received in the TextView---
 				lblAutoDisovery.setText(intent.getExtras().getString("sms"));
 				launchHttpTask();
 				
 			}
-			if(intent.getAction() == ALARM_LAMP_ACTION) {
-				Toast.makeText(context, "Rise and Shine!", Toast.LENGTH_SHORT).show();
+			if(intent.getAction().equals(ALARM_LAMP_ACTION)) {
+//				Toast.makeText(context, "Rise and Shine!", Toast.LENGTH_SHORT).show();
+				launchHttpTask();
 				
 			}
 				
@@ -100,7 +102,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.lamp, menu);
 		getMenuInflater().inflate(R.menu.settings, menu);
 		return true;
 	}
@@ -125,6 +126,7 @@ public class LampActivity extends Activity implements OnTaskListener {
  
         switch (requestCode) {
         case RESULT_SETTINGS:
+        	manageUserSettings();
             showUserSettings();
             break;
  
@@ -132,12 +134,23 @@ public class LampActivity extends Activity implements OnTaskListener {
  
     }
 
-    @Override
+    private void manageUserSettings() {
+    	long timeMillis = sharedPrefs.getLong("pref_key_alarm", 0);
+    	if(timeMillis > 0) {
+    		activateAlarm(pendingAlarm, timeMillis);
+    	} else {
+    		deactivateAlarm(pendingAlarm);
+    	}
+		
+	}
+
+	@Override
 	protected void onResume() {
 		//registerReceiver(intentReceiver, intentFilter);
 		// gestione audio
 		// startService(audioCaptureIntent);
 		super.onResume();
+		
 	}
 	
 	@Override
@@ -161,12 +174,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 		lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		chkSms = (CheckBox) findViewById(R.id.chkSms);
-		tpkAlarm = (TimePicker) findViewById(R.id.tpkAlarm);
 		btnTest = (Button) findViewById(R.id.btnTest);
 		prgUdp = (ProgressBar) findViewById(R.id.prgUdp);
-		chkAlarm = (CheckBox) findViewById(R.id.chkAlarm);
 		
-
+		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
 		// gestione audio
 //		chkAudio = (CheckBox) findViewById(R.id.chkAudio);
 //		audioCaptureIntent =  new Intent(this, AudioCaptureService.class);
@@ -178,39 +190,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 		//alarmFilter = new IntentFilter("ALARM_ACTION");
 		
 		registerReceiver(intentReceiver, intentFilter);
-		//registerReceiver(alarmReceiver, alarmFilter);
-		
-//		chkAudio.setOnClickListener(new OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				if(((CheckBox)v).isChecked()) {
-//					Log.d("chkAudio", "Check enabled");
-//					// Explicitly start AudioCaptureService 
-//					startService(audioCaptureIntent);
-//				} else {
-//					Log.d("chkAudio", "Check disabled");
-//					stopService(audioCaptureIntent);
-//				}
-//			}
-//		});
-		
+
 		alarmIntent = new Intent(ALARM_LAMP_ACTION);
 		pendingAlarm = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 
-		chkAlarm.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(((CheckBox)v).isChecked()) {
-					activateAlarm(pendingAlarm);
-				} else {
-					deactivateAlarm(pendingAlarm);
-				}
-				
-			}
-		});
-	
 		btnTest.setOnClickListener(new Button.OnClickListener() {
 			
 			@Override
@@ -247,14 +230,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 		
 	}
 	
-	private void activateAlarm(PendingIntent alarmIntent) {
+	private void activateAlarm(PendingIntent alarmIntent, long time) {
 		
 		AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-		int alarmType = AlarmManager.ELAPSED_REALTIME_WAKEUP;
+		int alarmType = AlarmManager.RTC_WAKEUP;
 		// Trigger the device in 20 seconds
-		long timeOrLengthOfWait = 20000;
+		//long timeOrLengthOfWait = 20000;
 		
-		alarmManager.setInexactRepeating(alarmType, timeOrLengthOfWait, timeOrLengthOfWait, alarmIntent);
+		//alarmManager.setInexactRepeating(alarmType, time, AlarmManager.INTERVAL_DAY, alarmIntent);
+		alarmManager.set(alarmType, time, alarmIntent);
 		
 	}
 	
@@ -264,13 +248,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 	}
 	
 	private void launchHttpTask() {
+		SharedPreferences sharedPrefs = PreferenceManager
+                .getDefaultSharedPreferences(this);
+		
+		boolean notify = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
 		
 		if(cUdp.getLampiIp() == null) {
-			if(chkSms.isChecked()) {
+			if(notify) {
 				new HttpNotifyTask().execute("192.168.1.2");
 			}
 		} else {
-			if(chkSms.isChecked()) {
+			if(notify) {
 				new HttpNotifyTask().execute(cUdp.getLampiIp());
 			}
 		}
@@ -287,7 +275,9 @@ public class LampActivity extends Activity implements OnTaskListener {
  
         builder.append("\n Inbound Sms:"
                 + sharedPrefs.getBoolean("pref_key_inbound_sms", false));
- 
+        
+        Log.d("showUserSettings", "Alarm value:" + sharedPrefs.getLong("pref_key_alarm", 2));
+        
 //        builder.append("\n Sync Frequency: "
 //                + sharedPrefs.getString("prefSyncFrequency", "NULL"));
  

@@ -1,8 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" >
     <PreferenceCategory android:title="@string/phone" android:key="pref_key_phone_settings">
-        <CheckBoxPreference android:key="pref_key_inbound_sms" android:title="@string/pref_title_inbound_sms" android:defaultValue="true" android:summary="@string/pref_summary_inbound_sms"/>
-    </PreferenceCategory>
-    
+        <CheckBoxPreference android:key="pref_key_inbound_sms" 
+            android:title="@string/pref_title_inbound_sms" 
+            android:defaultValue="true" 
+            android:summary="@string/pref_summary_inbound_sms"/>
+		<Preference android:key="pref_screen_key_inbound_sms_contact" 
+		    android:summary="@string/pref_summary_inbound_sms_contact" 
+		    android:title="@string/pref_title_inbound_sms_contact"
+		    android:dependency="pref_key_inbound_sms"/>
+	</PreferenceCategory>
+
+    <PreferenceCategory android:title="@string/alarm" android:key="pref_key_alarm_settings">
+		<com.wireless.lamp.TimePickerPreference
+		    android:dialogIcon="@drawable/lamp" 
+		    android:dialogTitle="@string/pref_title_alarm" 
+		    android:dialogMessage="Imposta l'orario della notifica" 
+		    android:key="pref_key_alarm" 
+		    android:negativeButtonText="Annulla" 
+		    android:positiveButtonText="OK" 
+		    android:summary="@string/pref_summary_alarm" 
+		    android:title="@string/pref_title_alarm"/>
+	</PreferenceCategory>
+
+	<PreferenceCategory android:title="Application">
+		<Preference android:key="pref_rate" android:summary="Rate the app in the store!" android:title="Rate the app"/>
+		<Preference android:key="pref_share" android:summary="Share the app with your friends" android:title="Share it"/>
+		<com.wireless.lamp.TimePickerPreference
+		    android:dialogIcon="@drawable/lamp" 
+		    android:dialogTitle="About" 
+		    android:key="pref_about_key" 
+		    android:negativeButtonText="@null" 
+		    android:title="About"/>
+	</PreferenceCategory>
 
 </PreferenceScreen>
