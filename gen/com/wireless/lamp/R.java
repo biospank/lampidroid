@@ -54,8 +54,8 @@ public final class R {
         public static final int menu_settings=0x7f06000c;
         public static final int phone=0x7f060009;
         public static final int pref_contact_dialog_message=0x7f060011;
-        public static final int pref_diaog_negative_button_text=0x7f060013;
-        public static final int pref_diaog_positive_button_text=0x7f060012;
+        public static final int pref_dialog_negative_button_text=0x7f060013;
+        public static final int pref_dialog_positive_button_text=0x7f060012;
         public static final int pref_summary_alarm=0x7f060010;
         public static final int pref_summary_inbound_sms=0x7f06000b;
         public static final int pref_summary_inbound_sms_contact=0x7f06000e;

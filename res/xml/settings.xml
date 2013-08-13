@@ -17,8 +17,8 @@
 		    android:dialogTitle="@string/pref_title_alarm" 
 		    android:dialogMessage="Imposta l'orario della notifica" 
 		    android:key="pref_key_alarm" 
-		    android:negativeButtonText="Annulla" 
-		    android:positiveButtonText="OK" 
+		    android:negativeButtonText="Elimina" 
+		    android:positiveButtonText="Imposta" 
 		    android:summary="@string/pref_summary_alarm" 
 		    android:title="@string/pref_title_alarm"/>
 	</PreferenceCategory>
