@@ -20,6 +20,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.ProgressBar;
+import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -33,8 +34,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private TextView lblAutoDisovery;
 	private Button btnRefresh;
 	private Button btnTest;
-	private CheckBox chkSms;
-	private ProgressBar prgUdp;
+	private TextView tvMsg;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
@@ -74,23 +74,19 @@ public class LampActivity extends Activity implements OnTaskListener {
 	
 	@Override
 	public void onTaskBegin() {
-		lblAutoDisovery.setVisibility(View.INVISIBLE);
-		prgUdp.setVisibility(View.VISIBLE);
+		tvMsg.setText("Ricerca del dispositivo in corso...");
 		
 	}
 	
 	@Override
 	public void onTaskCompleted() {
-		prgUdp.setVisibility(View.GONE);
-		lblAutoDisovery.setVisibility(View.VISIBLE);
-
 		String ip = cUdp.getLampiIp();
 		if(ip == null) {
 			Log.d("task completed", "no device found!!");
-			lblAutoDisovery.setText("Lamp device not found!!");
+			tvMsg.setText("Dispositivo non trovato: verifica la connessione e il cavo di rete");
 		} else {
 			Log.d("task completed", "device found!!");
-			lblAutoDisovery.setText("raspi ip: " + ip);
+			tvMsg.setText("Dispositivo trovato, indirizzo: " + ip);
 		}
 		
 	}
@@ -188,11 +184,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 	}
 
 	protected void initializeView() {
-		lblAutoDisovery = (TextView) findViewById(R.id.lblAutoDiscovery);
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
-		chkSms = (CheckBox) findViewById(R.id.chkSms);
+		tvMsg = (TextView) findViewById(R.id.tvMsg);
 		btnTest = (Button) findViewById(R.id.btnTest);
-		prgUdp = (ProgressBar) findViewById(R.id.prgUdp);
+		
+		tvMsg.setText("Welcome to lampidroid!!");
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -298,9 +294,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 //        builder.append("\n Sync Frequency: "
 //                + sharedPrefs.getString("prefSyncFrequency", "NULL"));
  
-        TextView settingsTextView = (TextView) findViewById(R.id.lblAutoDiscovery);
- 
-        settingsTextView.setText(builder.toString());
+        tvMsg.setText(builder.toString());
     }
 
 }
