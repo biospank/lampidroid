@@ -1,6 +1,9 @@
 package com.wireless.lamp;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -10,6 +13,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -31,7 +35,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
 	private static final int RESULT_SETTINGS = 1;
     private UdpClientTask cUdp;
-	private TextView lblAutoDisovery;
+	private TextView tvTopLeft;
+	private TextView tvTopRight;
+	private TextView tvBottomLeft;
+	private TextView tvBottomRight;
 	private Button btnRefresh;
 	private Button btnTest;
 	private TextView tvMsg;
@@ -58,7 +65,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 			if(intent.getAction().equals(SMS_LAMP_ACTION)) {
 				//---display the SMS received in the TextView---
-				lblAutoDisovery.setText(intent.getExtras().getString("sms"));
+				tvMsg.setText(intent.getExtras().getString("sms"));
 				launchHttpTask();
 				
 			}
@@ -97,6 +104,8 @@ public class LampActivity extends Activity implements OnTaskListener {
 		setContentView(R.layout.activity_lamp);
 
 		initializeView();
+		
+		showUserSettings();
 		
 		launchUdpTask();
 
@@ -186,6 +195,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 	protected void initializeView() {
 		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		tvMsg = (TextView) findViewById(R.id.tvMsg);
+		tvTopLeft = (TextView) findViewById(R.id.tvTopLeft);
+		tvTopRight = (TextView) findViewById(R.id.tvTopRight);
+		tvBottomLeft = (TextView) findViewById(R.id.tvBottomLeft);
+		tvBottomRight = (TextView) findViewById(R.id.tvBottomRight);
 		btnTest = (Button) findViewById(R.id.btnTest);
 		
 		tvMsg.setText("Welcome to lampidroid!!");
@@ -281,20 +294,33 @@ public class LampActivity extends Activity implements OnTaskListener {
         SharedPreferences sharedPrefs = PreferenceManager
                 .getDefaultSharedPreferences(this);
  
-        StringBuilder builder = new StringBuilder();
- 
-//        builder.append("\n Username: "
-//                + sharedPrefs.getString("prefUsername", "NULL"));
- 
-        builder.append("\n Inbound Sms:"
-                + sharedPrefs.getBoolean("pref_key_inbound_sms", false));
+        boolean smsActive = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
         
-        Log.d("showUserSettings", "Alarm value:" + sharedPrefs.getLong("pref_key_alarm", 2));
+        if(smsActive) {
+        	tvTopLeft.setTextColor(Color.GREEN);
+        	tvTopLeft.setText("Notifica sms abilitata");
+        } else {
+        	tvTopLeft.setTextColor(Color.RED);
+        	tvTopLeft.setText("Notifica sms disabilitata");
+        }
+
+        long alarmActive = sharedPrefs.getLong("pref_key_alarm", 0);
         
-//        builder.append("\n Sync Frequency: "
-//                + sharedPrefs.getString("prefSyncFrequency", "NULL"));
- 
-        tvMsg.setText(builder.toString());
+        if(alarmActive > 0) {
+        	tvTopRight.setTextColor(Color.GREEN);
+	        Date date = new Date(alarmActive);
+	        DateFormat formatter = new SimpleDateFormat("dd/MM/yyy HH:mm");
+	        String dateFormatted = formatter.format(date);
+        	
+	        StringBuilder builder = new StringBuilder();
+	        builder.append("Alert attivo:")
+	        	.append("\n\t: "  + dateFormatted);
+        	tvTopRight.setText(builder);
+        } else {
+        	tvTopLeft.setTextColor(Color.RED);
+        	tvTopLeft.setText("Alert disabilitato");
+        }
+        
     }
 
 }
