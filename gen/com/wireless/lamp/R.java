@@ -24,25 +24,19 @@ public final class R {
         public static final int lamp=0x7f020000;
     }
     public static final class id {
-        public static final int btnRefresh=0x7f090008;
         public static final int btnTest=0x7f090001;
-        public static final int hlBottom=0x7f090005;
-        public static final int hlTop=0x7f090002;
-        public static final int menu_settings=0x7f09000a;
-        public static final int tpkAlarm=0x7f090009;
-        public static final int tvBottomLeft=0x7f090006;
-        public static final int tvBottomRight=0x7f090007;
+        public static final int menu_about=0x7f090005;
+        public static final int menu_scan=0x7f090003;
+        public static final int menu_settings=0x7f090004;
+        public static final int tpkAlarm=0x7f090002;
         public static final int tvMsg=0x7f090000;
-        public static final int tvTopLeft=0x7f090003;
-        public static final int tvTopRight=0x7f090004;
     }
     public static final class layout {
         public static final int activity_lamp=0x7f030000;
         public static final int timepicker_dialog=0x7f030001;
     }
     public static final class menu {
-        public static final int lamp=0x7f080000;
-        public static final int settings=0x7f080001;
+        public static final int settings=0x7f080000;
     }
     public static final class string {
         public static final int action_settings=0x7f060001;
@@ -51,6 +45,8 @@ public final class R {
         public static final int audiosensor=0x7f060005;
         public static final int hello_world=0x7f060002;
         public static final int inboundsms=0x7f060004;
+        public static final int menu_about=0x7f060015;
+        public static final int menu_scan=0x7f060014;
         public static final int menu_settings=0x7f06000c;
         public static final int phone=0x7f060009;
         public static final int pref_contact_dialog_message=0x7f060011;

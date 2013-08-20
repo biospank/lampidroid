@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
@@ -13,7 +12,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -22,11 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ProgressBar;
-import android.widget.TextSwitcher;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 public class LampActivity extends Activity implements OnTaskListener {
@@ -35,11 +29,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
 	private static final int RESULT_SETTINGS = 1;
     private UdpClientTask cUdp;
-	private TextView tvTopLeft;
-	private TextView tvTopRight;
-	private TextView tvBottomLeft;
-	private TextView tvBottomRight;
-	private Button btnRefresh;
+//	private TextView tvTopLeft;
+//	private TextView tvTopRight;
+//	private TextView tvBottomLeft;
+//	private TextView tvBottomRight;
+//	private Button btnRefresh;
 	private Button btnTest;
 	private TextView tvMsg;
 	// gestione audio
@@ -193,12 +187,12 @@ public class LampActivity extends Activity implements OnTaskListener {
 	}
 
 	protected void initializeView() {
-		btnRefresh = (Button) findViewById(R.id.btnRefresh);
+//		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		tvMsg = (TextView) findViewById(R.id.tvMsg);
-		tvTopLeft = (TextView) findViewById(R.id.tvTopLeft);
-		tvTopRight = (TextView) findViewById(R.id.tvTopRight);
-		tvBottomLeft = (TextView) findViewById(R.id.tvBottomLeft);
-		tvBottomRight = (TextView) findViewById(R.id.tvBottomRight);
+//		tvTopLeft = (TextView) findViewById(R.id.tvTopLeft);
+//		tvTopRight = (TextView) findViewById(R.id.tvTopRight);
+		//tvBottomLeft = (TextView) findViewById(R.id.tvBottomLeft);
+		//tvBottomRight = (TextView) findViewById(R.id.tvBottomRight);
 		btnTest = (Button) findViewById(R.id.btnTest);
 		
 		tvMsg.setText("Welcome to lampidroid!!");
@@ -229,15 +223,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 		});
 
-		btnRefresh.setOnClickListener(new Button.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				launchUdpTask();
-				
-			}
-			
-		});
+//		btnRefresh.setOnClickListener(new Button.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				launchUdpTask();
+//				
+//			}
+//			
+//		});
 
 	}
 	
@@ -297,17 +291,17 @@ public class LampActivity extends Activity implements OnTaskListener {
         boolean smsActive = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
         
         if(smsActive) {
-        	tvTopLeft.setTextColor(Color.GREEN);
-        	tvTopLeft.setText("Notifica sms abilitata");
+//        	tvTopLeft.setTextColor(Color.GREEN);
+//        	tvTopLeft.setText("Notifica sms abilitata");
         } else {
-        	tvTopLeft.setTextColor(Color.RED);
-        	tvTopLeft.setText("Notifica sms disabilitata");
+//        	tvTopLeft.setTextColor(Color.RED);
+//        	tvTopLeft.setText("Notifica sms disabilitata");
         }
 
         long alarmActive = sharedPrefs.getLong("pref_key_alarm", 0);
         
         if(alarmActive > 0) {
-        	tvTopRight.setTextColor(Color.GREEN);
+//        	tvTopRight.setTextColor(Color.GREEN);
 	        Date date = new Date(alarmActive);
 	        DateFormat formatter = new SimpleDateFormat("dd/MM/yyy HH:mm");
 	        String dateFormatted = formatter.format(date);
@@ -315,10 +309,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 	        StringBuilder builder = new StringBuilder();
 	        builder.append("Alert attivo:")
 	        	.append("\n\t: "  + dateFormatted);
-        	tvTopRight.setText(builder);
+//        	tvTopRight.setText(builder);
         } else {
-        	tvTopLeft.setTextColor(Color.RED);
-        	tvTopLeft.setText("Alert disabilitato");
+//        	tvTopLeft.setTextColor(Color.RED);
+//        	tvTopLeft.setText("Alert disabilitato");
         }
         
     }

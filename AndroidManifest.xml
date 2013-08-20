@@ -41,8 +41,8 @@
             </intent-filter>
         </receiver>
         <service android:enabled="true" android:name=".AudioCaptureService"></service>
-        <activity android:name="com.wireless.lamp.LampSettingsActivity" />
-        <activity android:name="com.wireless.lamp.TimePickerPreference" />
+        <activity android:name=".LampSettingsActivity" />
+        <activity android:name=".TimePickerPreference" />
    	</application>
 
 </manifest>

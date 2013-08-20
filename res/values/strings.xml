@@ -21,5 +21,7 @@
     <string name="pref_contact_dialog_message">Seleziona i contatti da cui vuoi ricevere le notifiche</string>
     <string name="pref_dialog_positive_button_text">Conferma</string>
     <string name="pref_dialog_negative_button_text">Annulla</string>
+    <string name="menu_scan">Scan</string>
+    <string name="menu_about">About</string>
     
 </resources>
