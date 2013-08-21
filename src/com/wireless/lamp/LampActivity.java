@@ -218,6 +218,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 			@Override
 			public void onClick(View v) {
+				tvMsg.setText("Performing http request...");
 				launchHttpTask();
 			}
 			
