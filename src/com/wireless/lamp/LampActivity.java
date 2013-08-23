@@ -12,15 +12,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 public class LampActivity extends Activity implements OnTaskListener {
@@ -34,8 +33,9 @@ public class LampActivity extends Activity implements OnTaskListener {
 //	private TextView tvBottomLeft;
 //	private TextView tvBottomRight;
 //	private Button btnRefresh;
-	private Button btnTest;
-	private TextView tvMsg;
+	private ImageView icLocation;
+	private ImageView icSms;
+	private ImageView icAlarm;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
@@ -58,14 +58,18 @@ public class LampActivity extends Activity implements OnTaskListener {
 			context.startActivity(lampActivityIntent);
 			
 			if(intent.getAction().equals(SMS_LAMP_ACTION)) {
-				//---display the SMS received in the TextView---
-				tvMsg.setText(intent.getExtras().getString("sms"));
-				launchHttpTask();
+				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
+				if(notify) {
+					launchHttpTask();
+				}
 				
 			}
+
 			if(intent.getAction().equals(ALARM_LAMP_ACTION)) {
-//				Toast.makeText(context, "Rise and Shine!", Toast.LENGTH_SHORT).show();
-				launchHttpTask();
+				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+				if(notify) {
+					launchHttpTask();
+				}
 				
 			}
 				
@@ -75,7 +79,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	
 	@Override
 	public void onTaskBegin() {
-		tvMsg.setText("Ricerca del dispositivo in corso...");
+		icLocation.setImageResource(R.drawable.ic_location_search);
 		
 	}
 	
@@ -83,11 +87,13 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public void onTaskCompleted() {
 		String ip = cUdp.getLampiIp();
 		if(ip == null) {
-			Log.d("task completed", "no device found!!");
-			tvMsg.setText("Dispositivo non trovato: verifica la connessione e il cavo di rete");
+//			Log.d("task completed", "no device found!!");
+			icLocation.setImageResource(R.drawable.ic_location_off);
+			Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
 		} else {
-			Log.d("task completed", "device found!!");
-			tvMsg.setText("Dispositivo trovato, indirizzo: " + ip);
+//			Log.d("task completed", "device found!!");
+			icLocation.setImageResource(R.drawable.ic_location_found);
+			Toast.makeText(icLocation.getContext(), "Device found: ip address " + ip, Toast.LENGTH_LONG).show();
 		}
 		
 	}
@@ -121,9 +127,14 @@ public class LampActivity extends Activity implements OnTaskListener {
             startActivityForResult(settingsIntent, RESULT_SETTINGS);
             break;
  
+        case R.id.menu_scan:
+    		launchHttpTask();
+
+            break;
+ 
         }
  
-        return true;
+		return true;
     }
     
     @Override
@@ -142,8 +153,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 
     private void manageUserSettings() {
     	long currentTime = System.currentTimeMillis();
-    	long timeSet = sharedPrefs.getLong("pref_key_alarm", 0);
-    	if(timeSet > 0) {
+		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+
+        if(activeAlarm) {
     		long timeAlarm;
     		if(currentTime >= timeSet){
     			Calendar c = Calendar.getInstance();
@@ -157,6 +170,9 @@ public class LampActivity extends Activity implements OnTaskListener {
     	} else {
     		deactivateAlarm(pendingAlarm);
     	}
+        
+        showIconStateFor(R.id.icAlarm);
+        showIconStateFor(R.id.icSms);
 		
 	}
 
@@ -188,16 +204,18 @@ public class LampActivity extends Activity implements OnTaskListener {
 
 	protected void initializeView() {
 //		btnRefresh = (Button) findViewById(R.id.btnRefresh);
-		tvMsg = (TextView) findViewById(R.id.tvMsg);
+		icLocation = (ImageView) findViewById(R.id.icLocation);
+		icSms = (ImageView) findViewById(R.id.icSms);
+		icAlarm = (ImageView) findViewById(R.id.icAlarm);
 //		tvTopLeft = (TextView) findViewById(R.id.tvTopLeft);
 //		tvTopRight = (TextView) findViewById(R.id.tvTopRight);
 		//tvBottomLeft = (TextView) findViewById(R.id.tvBottomLeft);
 		//tvBottomRight = (TextView) findViewById(R.id.tvBottomRight);
-		btnTest = (Button) findViewById(R.id.btnTest);
-		
-		tvMsg.setText("Welcome to lampidroid!!");
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+		
+        showIconStateFor(R.id.icAlarm);
+        showIconStateFor(R.id.icSms);
 		
 		// gestione audio
 //		chkAudio = (CheckBox) findViewById(R.id.chkAudio);
@@ -214,16 +232,24 @@ public class LampActivity extends Activity implements OnTaskListener {
 		alarmIntent = new Intent(ALARM_LAMP_ACTION);
 		pendingAlarm = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 
-		btnTest.setOnClickListener(new Button.OnClickListener() {
+		icSms.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
-				tvMsg.setText("Performing http request...");
-				launchHttpTask();
+				changeStateFor(R.id.icSms);
 			}
 			
 		});
-
+		
+		icAlarm.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				changeStateFor(R.id.icAlarm);
+			}
+			
+		});
+		
 //		btnRefresh.setOnClickListener(new Button.OnClickListener() {
 //			
 //			@Override
@@ -233,6 +259,79 @@ public class LampActivity extends Activity implements OnTaskListener {
 //			}
 //			
 //		});
+
+	}
+	
+	private void changeStateFor(int resId) {
+		Editor editor = sharedPrefs.edit();
+		
+		switch (resId) {
+		case R.id.icSms:
+			if(sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false)) {
+				editor.putBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
+				Toast.makeText(icSms.getContext(), "Sms off!", Toast.LENGTH_SHORT).show();
+			} else {
+				editor.putBoolean(LampSettingsActivity.SMS_KEY_PREF, true);
+				Toast.makeText(icSms.getContext(), "Sms on!", Toast.LENGTH_SHORT).show();
+			}
+			break;
+
+		case R.id.icAlarm:
+			if(sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false)) {
+	    		deactivateAlarm(pendingAlarm);
+				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+				Toast.makeText(icAlarm.getContext(), "Alarm off!", Toast.LENGTH_SHORT).show();
+			} else {
+		    	long currentTime = System.currentTimeMillis();
+		        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+	    		long timeAlarm;
+	    		if(currentTime >= timeSet){
+	    			Calendar c = Calendar.getInstance();
+	    			if(timeSet > 0) {
+	        			c.setTimeInMillis(timeSet);
+	    			} else {
+	        			c.setTimeInMillis(currentTime);
+	    			}
+	    			c.add(Calendar.DATE, 1);
+	    			timeAlarm = c.getTimeInMillis();
+	    		} else {
+	    			timeAlarm = timeSet; 
+	    		}
+	    		activateAlarm(pendingAlarm, timeAlarm);
+    			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
+				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
+				Toast.makeText(icAlarm.getContext(), "Alarm on!", Toast.LENGTH_SHORT).show();
+			}
+			break;
+
+		}
+
+		editor.apply();
+		
+		showIconStateFor(resId);
+	}
+	
+	private void showIconStateFor(int resId) {
+		switch (resId) {
+		case R.id.icSms:
+			if(sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false)) {
+				icSms.setImageResource(R.drawable.ic_sms_active);
+			} else {
+				icSms.setImageResource(R.drawable.ic_sms);
+			}
+			break;
+
+		case R.id.icAlarm:
+			boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+			long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+			if(activeAlarm) {
+				icAlarm.setImageResource(R.drawable.ic_alarm_active);
+			} else {
+				icAlarm.setImageResource(R.drawable.ic_alarm);
+			}
+			break;
+
+		}
 
 	}
 	
@@ -269,25 +368,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 	}
 	
 	private void launchHttpTask() {
-		SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
-		
-		boolean notify = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
 		
 		if(cUdp.getLampiIp() == null) {
-			if(notify) {
-				new HttpNotifyTask().execute("192.168.1.2");
-			}
+			new HttpNotifyTask().execute("192.168.1.2");
 		} else {
-			if(notify) {
-				new HttpNotifyTask().execute(cUdp.getLampiIp());
-			}
+			new HttpNotifyTask().execute(cUdp.getLampiIp());
 		}
 	}
 
 	private void showUserSettings() {
-        SharedPreferences sharedPrefs = PreferenceManager
-                .getDefaultSharedPreferences(this);
  
         boolean smsActive = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
         

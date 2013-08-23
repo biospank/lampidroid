@@ -13,14 +13,18 @@ import android.view.View;
 import android.widget.TimePicker;
 
 public class TimePickerPreference extends DialogPreference {
-	Context mContext;
+//	Context mContext;
 	private TimePicker tpkAlarm;
+	SharedPreferences sharedPrefs;
 
 	
 	public TimePickerPreference(Context context, AttributeSet attrs) {
 		super(context, attrs);
 	
-		mContext = context;
+//		mContext = context;
+		
+		sharedPrefs = PreferenceManager
+	            .getDefaultSharedPreferences(context);
 		
 		setPersistent(false);
         
@@ -30,9 +34,6 @@ public class TimePickerPreference extends DialogPreference {
 
 	@Override
 	protected void onDialogClosed(boolean positiveResult) {
-		SharedPreferences sharedPrefs = PreferenceManager
-	            .getDefaultSharedPreferences(mContext);
-		
 		SharedPreferences.Editor editor = sharedPrefs.edit();
 		
 	    // When the user selects "OK", persist the new value
@@ -59,21 +60,22 @@ public class TimePickerPreference extends DialogPreference {
 			cal.set(Calendar.MILLISECOND, 0);
 			
 			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, cal.getTimeInMillis());
+			editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
 		} else {
 			editor.remove(LampSettingsActivity.ALARM_KEY_PREF);
+			editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 		}
 	}
 
 	@Override
     public void onBindDialogView(View view){
-		SharedPreferences sharedPrefs = PreferenceManager
-	            .getDefaultSharedPreferences(mContext);
 		tpkAlarm = (TimePicker)view.findViewById(R.id.tpkAlarm);
 		tpkAlarm.setIs24HourView(true);
 
-		long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 
-		if(timeSet > 0) {
+		if(activeAlarm) {
+			long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
 			Calendar cal = Calendar.getInstance();
 			cal.setTimeInMillis(timeSet);
 			tpkAlarm.setCurrentHour(cal.get(Calendar.HOUR_OF_DAY));

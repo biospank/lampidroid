@@ -24,9 +24,13 @@ public class LampSettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
 	private static final int PICK_CONTACT = 1001;
+	public static final String SMS_KEY_PREF = "pref_key_inbound_sms";
 	public static final String ALARM_KEY_PREF = "pref_key_alarm";
+	public static final String ALARM_KEY_ACTIVE = "key_alarm_active";
 	public static final String CONTACT_KEY_PREF = "pref_key_inbound_sms_contact";
-	
+
+	SharedPreferences sharedPrefs;
+
 //	@Override
 //	public boolean onPreferenceClick(Preference pref) {
 //		if(pref.getKey().equals("pref_key_inbound_sms_contact")) {
@@ -50,14 +54,19 @@ public class LampSettingsActivity extends PreferenceActivity implements
 		contactPickerIntent.setType(Phone.CONTENT_TYPE);
         contactPref.setIntent(contactPickerIntent);
 
-        SharedPreferences sharedPrefs = PreferenceManager
+        sharedPrefs = PreferenceManager
 	            .getDefaultSharedPreferences(this);
+
         Preference alarmPref = findPreference(ALARM_KEY_PREF);
+
+		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+
         long timeSet = sharedPrefs.getLong(ALARM_KEY_PREF, 0);
-        if(timeSet == 0)
-        	showSummary(alarmPref, null, false);
-        else
+
+        if(activeAlarm && timeSet > 0)
         	showSummary(alarmPref, timeSet, true);
+        else
+        	showSummary(alarmPref, null, false);
         
         	
 	}
@@ -83,13 +92,17 @@ public class LampSettingsActivity extends PreferenceActivity implements
 //			Intent contactPickerIntent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
 //			startActivityForResult(contactPickerIntent, PICK_CONTACT);
 		}
+
+		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+
 		if(key.equals(ALARM_KEY_PREF)) {
 	        Preference alarmPref = findPreference(key);
 	        long timeSet = sharedPreferences.getLong(key, 0);
-	        if(timeSet == 0)
-	        	showSummary(alarmPref, null, false);
-	        else
+
+	        if(activeAlarm && timeSet > 0)
 	        	showSummary(alarmPref, timeSet, true);
+	        else
+	        	showSummary(alarmPref, null, false);
 		}
 		
 	}
@@ -99,9 +112,9 @@ public class LampSettingsActivity extends PreferenceActivity implements
 	        Date date = new Date(timeSet);
 	        DateFormat formatter = new SimpleDateFormat("HH:mm");
 	        String dateFormatted = formatter.format(date);
-	        pref.setSummary("Notifica alle ore: " + dateFormatted);
+	        pref.setSummary("Alarm at: " + dateFormatted);
 		} else {
-	        pref.setSummary("Nessuna notifica");
+	        pref.setSummary("No alarm");
 		}
 	}
 

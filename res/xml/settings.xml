@@ -13,7 +13,7 @@
 
     <PreferenceCategory android:title="@string/alarm" android:key="pref_key_alarm_settings">
 		<com.wireless.lamp.TimePickerPreference
-		    android:dialogIcon="@drawable/lamp" 
+		    android:dialogIcon="@drawable/ic_launcher" 
 		    android:dialogTitle="@string/pref_title_alarm" 
 		    android:dialogMessage="Imposta l'orario della notifica" 
 		    android:key="pref_key_alarm" 
@@ -21,17 +21,6 @@
 		    android:positiveButtonText="Imposta" 
 		    android:summary="@string/pref_summary_alarm" 
 		    android:title="@string/pref_title_alarm"/>
-	</PreferenceCategory>
-
-	<PreferenceCategory android:title="Application">
-		<Preference android:key="pref_rate" android:summary="Rate the app in the store!" android:title="Rate the app"/>
-		<Preference android:key="pref_share" android:summary="Share the app with your friends" android:title="Share it"/>
-		<com.wireless.lamp.TimePickerPreference
-		    android:dialogIcon="@drawable/lamp" 
-		    android:dialogTitle="About" 
-		    android:key="pref_about_key" 
-		    android:negativeButtonText="@null" 
-		    android:title="About"/>
 	</PreferenceCategory>
 
 </PreferenceScreen>
