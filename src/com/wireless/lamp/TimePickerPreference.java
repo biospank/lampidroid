@@ -38,17 +38,17 @@ public class TimePickerPreference extends DialogPreference {
 		
 	    // When the user selects "OK", persist the new value
 	    if (positiveResult) {
-	    	displayAlarm(editor, true);
+	    	setAlarm(editor, true);
 	
 	    } else {
-	    	displayAlarm(editor, false);
+	    	setAlarm(editor, false);
 	    }
 
 		editor.apply();
 
 	}
 	
-	private void displayAlarm(SharedPreferences.Editor editor, boolean display) {
+	private void setAlarm(SharedPreferences.Editor editor, boolean display) {
 		if(display) {
 			Integer hour = tpkAlarm.getCurrentHour();
 			Integer minute = tpkAlarm.getCurrentMinute();
@@ -62,7 +62,8 @@ public class TimePickerPreference extends DialogPreference {
 			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, cal.getTimeInMillis());
 			editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
 		} else {
-			editor.remove(LampSettingsActivity.ALARM_KEY_PREF);
+			// l'informazione dell'orario non viene rimossa se l'allarme non viene settato
+			//editor.remove(LampSettingsActivity.ALARM_KEY_PREF);
 			editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 		}
 	}

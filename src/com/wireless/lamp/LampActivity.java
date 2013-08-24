@@ -152,21 +152,25 @@ public class LampActivity extends Activity implements OnTaskListener {
     }
 
     private void manageUserSettings() {
-    	long currentTime = System.currentTimeMillis();
+//    	long currentTime = System.currentTimeMillis();
 		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
-        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+//        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
 
         if(activeAlarm) {
-    		long timeAlarm;
-    		if(currentTime >= timeSet){
-    			Calendar c = Calendar.getInstance();
-    			c.setTimeInMillis(timeSet);
-    			c.add(Calendar.DATE, 1);
-    			timeAlarm = c.getTimeInMillis();
-    		} else {
-    			timeAlarm = timeSet; 
-    		}
-    		activateAlarm(pendingAlarm, timeAlarm);
+//    		long timeAlarm;
+//    		if(currentTime >= timeSet){
+//    			Calendar c = Calendar.getInstance();
+//    			if(timeSet > 0) {
+//        			c.setTimeInMillis(timeSet);
+//    			} else {
+//        			c.setTimeInMillis(currentTime);
+//    			}
+//    			c.add(Calendar.DATE, 1);
+//    			timeAlarm = c.getTimeInMillis();
+//    		} else {
+//    			timeAlarm = timeSet; 
+//    		}
+    		activateAlarm(pendingAlarm, getTimeAlarm());
     	} else {
     		deactivateAlarm(pendingAlarm);
     	}
@@ -282,21 +286,22 @@ public class LampActivity extends Activity implements OnTaskListener {
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 				Toast.makeText(icAlarm.getContext(), "Alarm off!", Toast.LENGTH_SHORT).show();
 			} else {
-		    	long currentTime = System.currentTimeMillis();
-		        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
-	    		long timeAlarm;
-	    		if(currentTime >= timeSet){
-	    			Calendar c = Calendar.getInstance();
-	    			if(timeSet > 0) {
-	        			c.setTimeInMillis(timeSet);
-	    			} else {
-	        			c.setTimeInMillis(currentTime);
-	    			}
-	    			c.add(Calendar.DATE, 1);
-	    			timeAlarm = c.getTimeInMillis();
-	    		} else {
-	    			timeAlarm = timeSet; 
-	    		}
+//		    	long currentTime = System.currentTimeMillis();
+//		        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+//	    		long timeAlarm;
+//	    		if(currentTime >= timeSet){
+//	    			Calendar c = Calendar.getInstance();
+//	    			if(timeSet > 0) {
+//	        			c.setTimeInMillis(timeSet);
+//	    			} else {
+//	        			c.setTimeInMillis(currentTime);
+//	    			}
+//	    			c.add(Calendar.DATE, 1);
+//	    			timeAlarm = c.getTimeInMillis();
+//	    		} else {
+//	    			timeAlarm = timeSet; 
+//	    		}
+	    		long timeAlarm = getTimeAlarm();
 	    		activateAlarm(pendingAlarm, timeAlarm);
     			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
@@ -406,5 +411,25 @@ public class LampActivity extends Activity implements OnTaskListener {
         }
         
     }
+	
+	private long getTimeAlarm() {
+    	long currentTime = System.currentTimeMillis();
+        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+		long timeAlarm;
+		if(currentTime >= timeSet){
+			Calendar c = Calendar.getInstance();
+			if(timeSet > 0) {
+    			c.setTimeInMillis(timeSet);
+			} else {
+    			c.setTimeInMillis(currentTime);
+			}
+			c.add(Calendar.DATE, 1);
+			timeAlarm = c.getTimeInMillis();
+		} else {
+			timeAlarm = timeSet; 
+		}
+
+		return timeAlarm;
+	}
 
 }

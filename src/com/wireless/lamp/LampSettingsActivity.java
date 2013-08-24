@@ -99,7 +99,7 @@ public class LampSettingsActivity extends PreferenceActivity implements
 	        Preference alarmPref = findPreference(key);
 	        long timeSet = sharedPreferences.getLong(key, 0);
 
-	        if(activeAlarm && timeSet > 0)
+	        if(activeAlarm)
 	        	showSummary(alarmPref, timeSet, true);
 	        else
 	        	showSummary(alarmPref, null, false);
