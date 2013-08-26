@@ -15,10 +15,10 @@
 		<com.wireless.lamp.TimePickerPreference
 		    android:dialogIcon="@drawable/ic_launcher" 
 		    android:dialogTitle="@string/pref_title_alarm" 
-		    android:dialogMessage="Imposta l'orario della notifica" 
+		    android:dialogMessage="Set alert at" 
 		    android:key="pref_key_alarm" 
-		    android:negativeButtonText="Elimina" 
-		    android:positiveButtonText="Imposta" 
+		    android:negativeButtonText="Delete" 
+		    android:positiveButtonText="Set" 
 		    android:summary="@string/pref_summary_alarm" 
 		    android:title="@string/pref_title_alarm"/>
 	</PreferenceCategory>

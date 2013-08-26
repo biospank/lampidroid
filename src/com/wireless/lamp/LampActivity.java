@@ -80,7 +80,28 @@ public class LampActivity extends Activity implements OnTaskListener {
 	@Override
 	public void onTaskBegin() {
 		icLocation.setImageResource(R.drawable.ic_location_search);
-		
+
+//		Thread anim = new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				try {
+//					for(int i = 0; i < 4; i++) {
+//						icLocation.setImageResource(R.drawable.ic_location_off);
+//							Thread.sleep(500);
+//						icLocation.setImageResource(R.drawable.ic_location_search);
+//						Thread.sleep(500);
+//					}
+//				} catch (InterruptedException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+//				
+//			}
+//		});
+//		
+//		anim.run();
+			
 	}
 	
 	@Override
@@ -127,7 +148,7 @@ public class LampActivity extends Activity implements OnTaskListener {
             startActivityForResult(settingsIntent, RESULT_SETTINGS);
             break;
  
-        case R.id.menu_scan:
+        case R.id.menu_test:
     		launchHttpTask();
 
             break;
@@ -254,16 +275,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 		});
 		
-//		btnRefresh.setOnClickListener(new Button.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				launchUdpTask();
-//				
-//			}
-//			
-//		});
-
+		icLocation.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(cUdp.getLampiIp() == null) {
+					launchUdpTask();
+				}
+			}
+			
+		});
+		
 	}
 	
 	private void changeStateFor(int resId) {

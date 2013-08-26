@@ -36,8 +36,8 @@ public final class R {
         public static final int icLocation=0x7f090000;
         public static final int icSms=0x7f090001;
         public static final int menu_about=0x7f090008;
-        public static final int menu_scan=0x7f090006;
         public static final int menu_settings=0x7f090007;
+        public static final int menu_test=0x7f090006;
         public static final int tpkAlarm=0x7f090005;
         public static final int tvAlarm=0x7f090004;
         public static final int tvSms=0x7f090002;
@@ -56,9 +56,10 @@ public final class R {
         public static final int audiosensor=0x7f060005;
         public static final int hello_world=0x7f060002;
         public static final int inboundsms=0x7f060004;
-        public static final int menu_about=0x7f060015;
+        public static final int menu_about=0x7f060016;
         public static final int menu_scan=0x7f060014;
         public static final int menu_settings=0x7f06000c;
+        public static final int menu_test=0x7f060015;
         public static final int phone=0x7f060009;
         public static final int pref_contact_dialog_message=0x7f060011;
         public static final int pref_dialog_negative_button_text=0x7f060013;
