@@ -66,7 +66,7 @@ public class LampSettingsActivity extends PreferenceActivity implements
         if(activeAlarm && timeSet > 0)
         	showSummary(alarmPref, timeSet, true);
         else
-        	showSummary(alarmPref, null, false);
+        	showSummary(alarmPref, timeSet, false);
         
         	
 	}
@@ -102,19 +102,17 @@ public class LampSettingsActivity extends PreferenceActivity implements
 	        if(activeAlarm)
 	        	showSummary(alarmPref, timeSet, true);
 	        else
-	        	showSummary(alarmPref, null, false);
+	        	showSummary(alarmPref, timeSet, false);
 		}
 		
 	}
 	
-	private void showSummary(Preference pref, Long timeSet, boolean show) {
+	private void showSummary(Preference pref, long timeSet, boolean show) {
 		if(show) {
-	        Date date = new Date(timeSet);
-	        DateFormat formatter = new SimpleDateFormat("HH:mm");
-	        String dateFormatted = formatter.format(date);
-	        pref.setSummary("Alarm at: " + dateFormatted);
+			long timeAlarm = LampUtil.getTimeAlarmFor(timeSet);
+	        pref.setSummary("Alarm set on: " + LampUtil.getFormattedDateFor(timeAlarm, getApplicationContext()));
 		} else {
-	        pref.setSummary("No alarm");
+	        pref.setSummary("No alarm set");
 		}
 	}
 

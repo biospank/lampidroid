@@ -175,7 +175,6 @@ public class LampActivity extends Activity implements OnTaskListener {
     private void manageUserSettings() {
 //    	long currentTime = System.currentTimeMillis();
 		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
-//        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
 
         if(activeAlarm) {
 //    		long timeAlarm;
@@ -191,7 +190,8 @@ public class LampActivity extends Activity implements OnTaskListener {
 //    		} else {
 //    			timeAlarm = timeSet; 
 //    		}
-    		activateAlarm(pendingAlarm, getTimeAlarm());
+            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+    		activateAlarm(pendingAlarm, LampUtil.getTimeAlarmFor(timeSet));
     	} else {
     		deactivateAlarm(pendingAlarm);
     	}
@@ -323,11 +323,12 @@ public class LampActivity extends Activity implements OnTaskListener {
 //	    		} else {
 //	    			timeAlarm = timeSet; 
 //	    		}
-	    		long timeAlarm = getTimeAlarm();
+	            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+	    		long timeAlarm = LampUtil.getTimeAlarmFor(timeSet);
 	    		activateAlarm(pendingAlarm, timeAlarm);
     			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
-				Toast.makeText(icAlarm.getContext(), "Alarm on!", Toast.LENGTH_SHORT).show();
+				Toast.makeText(icAlarm.getContext(), "Alarm set on: " + LampUtil.getFormattedDateFor(timeAlarm, getApplicationContext()), Toast.LENGTH_SHORT).show();
 			}
 			break;
 
@@ -350,7 +351,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 
 		case R.id.icAlarm:
 			boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
-			long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
 			if(activeAlarm) {
 				icAlarm.setImageResource(R.drawable.ic_alarm_active);
 			} else {
@@ -434,24 +434,36 @@ public class LampActivity extends Activity implements OnTaskListener {
         
     }
 	
-	private long getTimeAlarm() {
-    	long currentTime = System.currentTimeMillis();
-        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
-		long timeAlarm;
-		if(currentTime >= timeSet){
-			Calendar c = Calendar.getInstance();
-			if(timeSet > 0) {
-    			c.setTimeInMillis(timeSet);
-			} else {
-    			c.setTimeInMillis(currentTime);
-			}
-			c.add(Calendar.DATE, 1);
-			timeAlarm = c.getTimeInMillis();
-		} else {
-			timeAlarm = timeSet; 
-		}
-
-		return timeAlarm;
-	}
-
+//	private long getTimeAlarm() {
+//    	long currentTime = System.currentTimeMillis();
+//        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+//		long timeAlarm;
+//		if(currentTime >= timeSet){
+//			Calendar c = Calendar.getInstance();
+//			if(timeSet > 0) {
+//    			c.setTimeInMillis(timeSet);
+//			} else {
+//    			c.setTimeInMillis(currentTime);
+//			}
+//			c.add(Calendar.DATE, 1);
+//			timeAlarm = c.getTimeInMillis();
+//		} else {
+//			timeAlarm = timeSet; 
+//		}
+//
+//		return timeAlarm;
+//	}
+//
+//	public static String getFormattedDateFor(long timeAlarm, Context ctx) {
+//        Date date = new Date(timeAlarm);
+//        DateFormat dateformatter = android.text.format.DateFormat.getDateFormat(ctx);
+//        DateFormat timeformatter = android.text.format.DateFormat.getTimeFormat(ctx);
+//
+//        StringBuilder strDate = new StringBuilder();
+//        strDate.append(dateformatter.format(date));
+//        strDate.append(" at " + timeformatter.format(date));
+//        
+//        return strDate.toString();
+//        
+//	}
 }
