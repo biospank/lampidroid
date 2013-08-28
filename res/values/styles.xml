@@ -17,4 +17,13 @@
         <!-- All customizations that are NOT specific to a particular API-level can go here. -->
     </style>
 
+	<style name="Summary" parent="@android:style/TextAppearance.Large">
+	    
+	    <item name="android:layout_width">wrap_content</item>
+	    <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">#056BAA</item>
+        <item name="android:textColor">#E4FEAD</item>
+        <item name="android:typeface">sans</item>
+        <item name="android:textSize">40sp</item>
+        </style>    
 </resources>

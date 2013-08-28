@@ -20,6 +20,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class LampActivity extends Activity implements OnTaskListener {
@@ -28,7 +29,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
 	private static final int RESULT_SETTINGS = 1;
     private UdpClientTask cUdp;
-//	private TextView tvTopLeft;
 //	private TextView tvTopRight;
 //	private TextView tvBottomLeft;
 //	private TextView tvBottomRight;
@@ -36,6 +36,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private ImageView icLocation;
 	private ImageView icSms;
 	private ImageView icAlarm;
+	private TextView tvAlarm;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
@@ -177,19 +178,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 
         if(activeAlarm) {
-//    		long timeAlarm;
-//    		if(currentTime >= timeSet){
-//    			Calendar c = Calendar.getInstance();
-//    			if(timeSet > 0) {
-//        			c.setTimeInMillis(timeSet);
-//    			} else {
-//        			c.setTimeInMillis(currentTime);
-//    			}
-//    			c.add(Calendar.DATE, 1);
-//    			timeAlarm = c.getTimeInMillis();
-//    		} else {
-//    			timeAlarm = timeSet; 
-//    		}
             long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
     		activateAlarm(pendingAlarm, LampUtil.getTimeAlarmFor(timeSet));
     	} else {
@@ -232,7 +220,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 		icLocation = (ImageView) findViewById(R.id.icLocation);
 		icSms = (ImageView) findViewById(R.id.icSms);
 		icAlarm = (ImageView) findViewById(R.id.icAlarm);
-//		tvTopLeft = (TextView) findViewById(R.id.tvTopLeft);
+		tvAlarm = (TextView) findViewById(R.id.tvAlarm);
 //		tvTopRight = (TextView) findViewById(R.id.tvTopRight);
 		//tvBottomLeft = (TextView) findViewById(R.id.tvBottomLeft);
 		//tvBottomRight = (TextView) findViewById(R.id.tvBottomRight);
@@ -306,29 +294,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 			if(sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false)) {
 	    		deactivateAlarm(pendingAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+				tvAlarm.setText("No alarm set");
 				Toast.makeText(icAlarm.getContext(), "Alarm off!", Toast.LENGTH_SHORT).show();
 			} else {
-//		    	long currentTime = System.currentTimeMillis();
-//		        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
-//	    		long timeAlarm;
-//	    		if(currentTime >= timeSet){
-//	    			Calendar c = Calendar.getInstance();
-//	    			if(timeSet > 0) {
-//	        			c.setTimeInMillis(timeSet);
-//	    			} else {
-//	        			c.setTimeInMillis(currentTime);
-//	    			}
-//	    			c.add(Calendar.DATE, 1);
-//	    			timeAlarm = c.getTimeInMillis();
-//	    		} else {
-//	    			timeAlarm = timeSet; 
-//	    		}
 	            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
 	    		long timeAlarm = LampUtil.getTimeAlarmFor(timeSet);
 	    		activateAlarm(pendingAlarm, timeAlarm);
     			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
-				Toast.makeText(icAlarm.getContext(), "Alarm set on: " + LampUtil.getFormattedDateFor(timeAlarm, getApplicationContext()), Toast.LENGTH_SHORT).show();
+				String formattedDate = LampUtil.getFormattedTimeFor(timeAlarm, getApplicationContext());
+				tvAlarm.setText(formattedDate);
+				Toast.makeText(icAlarm.getContext(), "Alarm set on: " + formattedDate, Toast.LENGTH_SHORT).show();
 			}
 			break;
 
@@ -415,55 +391,16 @@ public class LampActivity extends Activity implements OnTaskListener {
 //        	tvTopLeft.setText("Notifica sms disabilitata");
         }
 
-        long alarmActive = sharedPrefs.getLong("pref_key_alarm", 0);
-        
-        if(alarmActive > 0) {
-//        	tvTopRight.setTextColor(Color.GREEN);
-	        Date date = new Date(alarmActive);
-	        DateFormat formatter = new SimpleDateFormat("dd/MM/yyy HH:mm");
-	        String dateFormatted = formatter.format(date);
-        	
-	        StringBuilder builder = new StringBuilder();
-	        builder.append("Alert attivo:")
-	        	.append("\n\t: "  + dateFormatted);
-//        	tvTopRight.setText(builder);
+		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
+		if(activeAlarm) {
+            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+    		long timeAlarm = LampUtil.getTimeAlarmFor(timeSet);
+			String formattedDate = LampUtil.getFormattedTimeFor(timeAlarm, getApplicationContext());
+			tvAlarm.setText(formattedDate);
         } else {
-//        	tvTopLeft.setTextColor(Color.RED);
-//        	tvTopLeft.setText("Alert disabilitato");
+			tvAlarm.setText("No alarm set");
         }
         
     }
 	
-//	private long getTimeAlarm() {
-//    	long currentTime = System.currentTimeMillis();
-//        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
-//		long timeAlarm;
-//		if(currentTime >= timeSet){
-//			Calendar c = Calendar.getInstance();
-//			if(timeSet > 0) {
-//    			c.setTimeInMillis(timeSet);
-//			} else {
-//    			c.setTimeInMillis(currentTime);
-//			}
-//			c.add(Calendar.DATE, 1);
-//			timeAlarm = c.getTimeInMillis();
-//		} else {
-//			timeAlarm = timeSet; 
-//		}
-//
-//		return timeAlarm;
-//	}
-//
-//	public static String getFormattedDateFor(long timeAlarm, Context ctx) {
-//        Date date = new Date(timeAlarm);
-//        DateFormat dateformatter = android.text.format.DateFormat.getDateFormat(ctx);
-//        DateFormat timeformatter = android.text.format.DateFormat.getTimeFormat(ctx);
-//
-//        StringBuilder strDate = new StringBuilder();
-//        strDate.append(dateformatter.format(date));
-//        strDate.append(" at " + timeformatter.format(date));
-//        
-//        return strDate.toString();
-//        
-//	}
 }

@@ -29,6 +29,14 @@ public class LampUtil {
 	public static String getFormattedDateFor(long timeAlarm, Context ctx) {
         Date date = new Date(timeAlarm);
         DateFormat dateformatter = android.text.format.DateFormat.getDateFormat(ctx);
+        
+        return dateformatter.format(date);
+        
+	}
+
+	public static String getFullFormattedDateFor(long timeAlarm, Context ctx) {
+        Date date = new Date(timeAlarm);
+        DateFormat dateformatter = android.text.format.DateFormat.getDateFormat(ctx);
         DateFormat timeformatter = android.text.format.DateFormat.getTimeFormat(ctx);
 
         StringBuilder strDate = new StringBuilder();
@@ -36,6 +44,14 @@ public class LampUtil {
         strDate.append(" at " + timeformatter.format(date));
         
         return strDate.toString();
+        
+	}
+
+	public static String getFormattedTimeFor(long timeAlarm, Context ctx) {
+        Date date = new Date(timeAlarm);
+        DateFormat timeformatter = android.text.format.DateFormat.getTimeFormat(ctx);
+
+        return timeformatter.format(date);
         
 	}
 
