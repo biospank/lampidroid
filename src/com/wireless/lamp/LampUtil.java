@@ -5,6 +5,12 @@ import java.util.Calendar;
 import java.util.Date;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.style.ForegroundColorSpan;
 
 public class LampUtil {
 	public static long getTimeAlarmFor(long timeSet) {
@@ -39,11 +45,13 @@ public class LampUtil {
         DateFormat dateformatter = android.text.format.DateFormat.getDateFormat(ctx);
         DateFormat timeformatter = android.text.format.DateFormat.getTimeFormat(ctx);
 
-        StringBuilder strDate = new StringBuilder();
-        strDate.append(dateformatter.format(date));
-        strDate.append(" at " + timeformatter.format(date));
+        String strDate = "<small>" + dateformatter.format(date) + "</small> at <br />" + timeformatter.format(date) + "";
         
-        return strDate.toString();
+//        Spannable sText = new SpannableString(strDate);
+//        sText.setSpan(new ForegroundColorSpan(Color.BLUE), 5, 9, 0);
+
+        Spanned sText = Html.fromHtml(strDate);
+        return sText.toString();
         
 	}
 

@@ -202,7 +202,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	protected void onDestroy() {
 		unregisterReceiver(intentReceiver);
 		//unregisterReceiver(alarmReceiver);
-		deactivateAlarm(pendingAlarm);
+		//deactivateAlarm(pendingAlarm);
 		super.onDestroy();
 	}
 
@@ -302,7 +302,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	    		activateAlarm(pendingAlarm, timeAlarm);
     			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
-				String formattedDate = LampUtil.getFormattedTimeFor(timeAlarm, getApplicationContext());
+				String formattedDate = LampUtil.getFullFormattedDateFor(timeAlarm, getApplicationContext());
 				tvAlarm.setText(formattedDate);
 				Toast.makeText(icAlarm.getContext(), "Alarm set on: " + formattedDate, Toast.LENGTH_SHORT).show();
 			}
