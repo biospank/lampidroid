@@ -1,12 +1,11 @@
 package com.wireless.lamp;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.TimePickerDialog;
+import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +20,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
 public class LampActivity extends Activity implements OnTaskListener {
@@ -29,14 +30,11 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
 	private static final int RESULT_SETTINGS = 1;
     private UdpClientTask cUdp;
-//	private TextView tvTopRight;
-//	private TextView tvBottomLeft;
-//	private TextView tvBottomRight;
-//	private Button btnRefresh;
 	private ImageView icLocation;
 	private ImageView icSms;
 	private ImageView icAlarm;
 	private TextView tvAlarm;
+	private TextView tvSms;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
@@ -81,28 +79,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 	@Override
 	public void onTaskBegin() {
 		icLocation.setImageResource(R.drawable.ic_location_search);
-
-//		Thread anim = new Thread(new Runnable() {
-//			
-//			@Override
-//			public void run() {
-//				try {
-//					for(int i = 0; i < 4; i++) {
-//						icLocation.setImageResource(R.drawable.ic_location_off);
-//							Thread.sleep(500);
-//						icLocation.setImageResource(R.drawable.ic_location_search);
-//						Thread.sleep(500);
-//					}
-//				} catch (InterruptedException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				
-//			}
-//		});
-//		
-//		anim.run();
-			
 	}
 	
 	@Override
@@ -221,9 +197,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 		icSms = (ImageView) findViewById(R.id.icSms);
 		icAlarm = (ImageView) findViewById(R.id.icAlarm);
 		tvAlarm = (TextView) findViewById(R.id.tvAlarm);
-//		tvTopRight = (TextView) findViewById(R.id.tvTopRight);
-		//tvBottomLeft = (TextView) findViewById(R.id.tvBottomLeft);
-		//tvBottomRight = (TextView) findViewById(R.id.tvBottomRight);
+		tvSms = (TextView) findViewById(R.id.tvSms);
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -238,8 +212,6 @@ public class LampActivity extends Activity implements OnTaskListener {
 		intentFilter.addAction(SMS_LAMP_ACTION);
 		intentFilter.addAction(ALARM_LAMP_ACTION);
 		
-		//alarmFilter = new IntentFilter("ALARM_ACTION");
-		
 		registerReceiver(intentReceiver, intentFilter);
 
 		alarmIntent = new Intent(ALARM_LAMP_ACTION);
@@ -249,7 +221,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 			@Override
 			public void onClick(View v) {
-				changeStateFor(R.id.icSms);
+				changeStateFor(R.id.icSms, null);
 			}
 			
 		});
@@ -258,7 +230,34 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 			@Override
 			public void onClick(View v) {
-				changeStateFor(R.id.icAlarm);
+				changeStateFor(R.id.icAlarm, null);
+			}
+			
+		});
+		
+		tvAlarm.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+
+				Calendar timeCalendar = LampUtil.getCalendarFor(sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0));
+
+				TimePickerDialog timePickerDialog = new TimePickerDialog(LampActivity.this, new OnTimeSetListener() {
+					
+					@Override
+					public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+						Calendar cal = Calendar.getInstance();
+						cal.set(Calendar.HOUR_OF_DAY, hourOfDay);
+						cal.set(Calendar.MINUTE, minute);
+						cal.set(Calendar.SECOND, 0);
+						cal.set(Calendar.MILLISECOND, 0);
+
+						changeStateFor(R.id.tvAlarm, LampUtil.getCalendarFor(cal.getTimeInMillis()));
+					}
+					
+				}, timeCalendar.get(Calendar.HOUR_OF_DAY), timeCalendar.get(Calendar.MINUTE), true);
+				
+				timePickerDialog.show();
 			}
 			
 		});
@@ -276,25 +275,29 @@ public class LampActivity extends Activity implements OnTaskListener {
 		
 	}
 	
-	private void changeStateFor(int resId) {
+	private void changeStateFor(int resId, Object extra) {
 		Editor editor = sharedPrefs.edit();
 		
 		switch (resId) {
 		case R.id.icSms:
+			String formattedText;
 			if(sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false)) {
 				editor.putBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
-				Toast.makeText(icSms.getContext(), "Sms off!", Toast.LENGTH_SHORT).show();
+				formattedText = "Sms alert off!";
 			} else {
 				editor.putBoolean(LampSettingsActivity.SMS_KEY_PREF, true);
-				Toast.makeText(icSms.getContext(), "Sms on!", Toast.LENGTH_SHORT).show();
+				formattedText = "Sms alert on!";
 			}
+
+			tvSms.setText(LampUtil.getSmsSummarySpanText(formattedText));
+			Toast.makeText(icSms.getContext(), formattedText, Toast.LENGTH_SHORT).show();
+			
 			break;
 
 		case R.id.icAlarm:
 			if(sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false)) {
 	    		deactivateAlarm(pendingAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
-				tvAlarm.setText("No alarm set");
 				Toast.makeText(icAlarm.getContext(), "Alarm off!", Toast.LENGTH_SHORT).show();
 			} else {
 	            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
@@ -303,11 +306,20 @@ public class LampActivity extends Activity implements OnTaskListener {
     			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
 				editor.putBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, true);
 				String formattedDate = LampUtil.getFullFormattedDateFor(timeAlarm, getApplicationContext());
-				tvAlarm.setText(formattedDate);
-				Toast.makeText(icAlarm.getContext(), "Alarm set on: " + formattedDate, Toast.LENGTH_SHORT).show();
+				tvAlarm.setText(LampUtil.getAlarmSummarySpanText(formattedDate), BufferType.SPANNABLE);
+				Toast.makeText(icAlarm.getContext(), "Alarm on: " + formattedDate, Toast.LENGTH_SHORT).show();
 			}
 			break;
 
+		case R.id.tvAlarm:
+			long timeAlarm = ((Calendar) extra).getTimeInMillis();
+    		activateAlarm(pendingAlarm, timeAlarm);
+			editor.putLong(LampSettingsActivity.ALARM_KEY_PREF, timeAlarm);
+			String formattedDate = LampUtil.getFullFormattedDateFor(timeAlarm, getApplicationContext());
+			tvAlarm.setText(LampUtil.getAlarmSummarySpanText(formattedDate), BufferType.SPANNABLE);
+			Toast.makeText(icAlarm.getContext(), "Alarm on: " + formattedDate, Toast.LENGTH_SHORT).show();
+
+			break;
 		}
 
 		editor.apply();
@@ -384,21 +396,20 @@ public class LampActivity extends Activity implements OnTaskListener {
         boolean smsActive = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
         
         if(smsActive) {
-//        	tvTopLeft.setTextColor(Color.GREEN);
-//        	tvTopLeft.setText("Notifica sms abilitata");
+			String formattedText = "Sms alert on!";
+			tvSms.setText(LampUtil.getSmsSummarySpanText(formattedText));
         } else {
-//        	tvTopLeft.setTextColor(Color.RED);
-//        	tvTopLeft.setText("Notifica sms disabilitata");
+			String formattedText = "Sms alert off!";
+			tvSms.setText(LampUtil.getSmsSummarySpanText(formattedText));
         }
 
-		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
-		if(activeAlarm) {
-            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+        long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+		if(timeSet > 0) {
     		long timeAlarm = LampUtil.getTimeAlarmFor(timeSet);
-			String formattedDate = LampUtil.getFormattedTimeFor(timeAlarm, getApplicationContext());
-			tvAlarm.setText(formattedDate);
+			String formattedDate = LampUtil.getFullFormattedDateFor(timeAlarm, getApplicationContext());
+			tvAlarm.setText(LampUtil.getAlarmSummarySpanText(formattedDate), BufferType.SPANNABLE);
         } else {
-			tvAlarm.setText("No alarm set");
+			tvAlarm.setText("Tap to set alarm");
         }
         
     }

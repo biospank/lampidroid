@@ -21,32 +21,33 @@ public final class R {
         public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int custom_button=0x7f020000;
-        public static final int function_border=0x7f020001;
-        public static final int ic_alarm=0x7f020002;
-        public static final int ic_alarm_active=0x7f020003;
-        public static final int ic_edit=0x7f020004;
-        public static final int ic_launcher=0x7f020005;
-        public static final int ic_location_found=0x7f020006;
-        public static final int ic_location_off=0x7f020007;
-        public static final int ic_location_search=0x7f020008;
-        public static final int ic_repeat=0x7f020009;
-        public static final int ic_repeat_active=0x7f02000a;
-        public static final int ic_sms=0x7f02000b;
-        public static final int ic_sms_active=0x7f02000c;
+        public static final int function_border=0x7f020000;
+        public static final int ic_alarm=0x7f020001;
+        public static final int ic_alarm_active=0x7f020002;
+        public static final int ic_edit=0x7f020003;
+        public static final int ic_launcher=0x7f020004;
+        public static final int ic_location_found=0x7f020005;
+        public static final int ic_location_off=0x7f020006;
+        public static final int ic_location_search=0x7f020007;
+        public static final int ic_repeat=0x7f020008;
+        public static final int ic_repeat_active=0x7f020009;
+        public static final int ic_sms=0x7f02000a;
+        public static final int ic_sms_active=0x7f02000b;
+        public static final int section_border=0x7f02000c;
         public static final int summary_border=0x7f02000d;
     }
     public static final class id {
         public static final int icAlarm=0x7f090006;
         public static final int icLocation=0x7f090000;
         public static final int icSms=0x7f090003;
-        public static final int menu_about=0x7f09000a;
-        public static final int menu_settings=0x7f090009;
-        public static final int menu_test=0x7f090008;
+        public static final int menu_about=0x7f09000b;
+        public static final int menu_settings=0x7f09000a;
+        public static final int menu_test=0x7f090009;
         public static final int tableRow1=0x7f090001;
         public static final int tableRow2=0x7f090004;
-        public static final int tpkAlarm=0x7f090007;
+        public static final int tpkAlarm=0x7f090008;
         public static final int tvAlarm=0x7f090005;
+        public static final int tvFooter=0x7f090007;
         public static final int tvSms=0x7f090002;
     }
     public static final class layout {
@@ -108,9 +109,11 @@ public final class R {
  All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f070001;
-        public static final int Function=0x7f070004;
-        public static final int Summary=0x7f070003;
-        public static final int Summary_SubSummary=0x7f070005;
+        public static final int Function=0x7f070007;
+        public static final int Section=0x7f070003;
+        public static final int Section_SectionFooter=0x7f070005;
+        public static final int Section_SectionHeader=0x7f070004;
+        public static final int Summary=0x7f070006;
         public static final int TableRowItem=0x7f070002;
     }
     public static final class xml {
