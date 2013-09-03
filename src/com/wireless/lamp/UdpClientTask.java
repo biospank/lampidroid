@@ -13,6 +13,7 @@ import android.util.Log;
 public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 
 	private static final String TAG = "Discovery";
+	private static final String UDP_STRING_REQUEST = "reply_port=12345";
 	private static final int SERVER_PORT = 1234;
 	private static final int TIMEOUT_REQUEST = 500;
 	private static final int TIMEOUT_RESPONSE = 2000;
@@ -62,13 +63,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	 * @throws IOException
 	 */
 	private void sendDiscoveryRequest(DatagramSocket socket) throws IOException {
-		// String data = String
-		// .format(
-		// "<bdp1 cmd=\"discover\" application=\"iphone_remote\" challenge=\"%s\" signature=\"%s\"/>",
-		// mChallenge, getSignature(mChallenge));
-		// Log.d(TAG, "Sending data " + data);
-
-		String data = new String("12345");
+		String data = new String(UDP_STRING_REQUEST);
 
 		DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
 				getBroadcastAddress(), SERVER_PORT);

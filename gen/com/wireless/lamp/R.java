@@ -110,6 +110,7 @@ public final class R {
          */
         public static final int AppTheme=0x7f070001;
         public static final int Function=0x7f070007;
+        public static final int Function_Active=0x7f070008;
         public static final int Section=0x7f070003;
         public static final int Section_SectionFooter=0x7f070005;
         public static final int Section_SectionHeader=0x7f070004;

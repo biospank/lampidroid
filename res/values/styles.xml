@@ -69,4 +69,8 @@
         <item name="android:background">@drawable/function_border</item>
     </style>
 
+    <style name="Function.Active">
+        <item name="android:background">@drawable/summary_border</item>
+    </style>
+
 </resources>

@@ -11,7 +11,7 @@ import android.os.AsyncTask;
 public class HttpNotifyTask extends AsyncTask<String, Void, Void> {
 
 	private final int LAMPI_HTTP_PORT = 4567;
-	private final String LAMPI_CLIENT_NAME = "lampidroid";
+	private final String LAMPI_CLIENT_NAME = "droid";
 	
 	
 	

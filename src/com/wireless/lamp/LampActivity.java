@@ -331,8 +331,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 		switch (resId) {
 		case R.id.icSms:
 			if(sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false)) {
+//				icSms.setBackgroundResource(R.drawable.summary_border);
 				icSms.setImageResource(R.drawable.ic_sms_active);
 			} else {
+//				icSms.setBackgroundResource(R.drawable.function_border);
 				icSms.setImageResource(R.drawable.ic_sms);
 			}
 			break;
@@ -340,8 +342,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 		case R.id.icAlarm:
 			boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 			if(activeAlarm) {
+//				icAlarm.setBackgroundResource(R.drawable.summary_border);
 				icAlarm.setImageResource(R.drawable.ic_alarm_active);
 			} else {
+//				icAlarm.setBackgroundResource(R.drawable.function_border);
 				icAlarm.setImageResource(R.drawable.ic_alarm);
 			}
 			break;
