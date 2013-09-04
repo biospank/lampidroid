@@ -1,6 +1,7 @@
 package com.wireless.lamp;
 
 import java.io.IOException;
+import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -39,11 +40,17 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 
 			sendDiscoveryRequest(socket);
 			listenForResponses(rcvsocket);
+		} catch (BindException be) {
+			Log.e(TAG, "Could not send discovery request", be);
 		} catch (IOException e) {
 			Log.e(TAG, "Could not send discovery request", e);
+		} catch (RuntimeException re) {
+			Log.e(TAG, "Could not send discovery request", re);
 		} finally {
-			socket.close();
-			rcvsocket.close();
+			if(socket != null)
+				socket.close();
+			if(rcvsocket != null)
+				rcvsocket.close();
 		}
 		return null;
 	}
