@@ -121,10 +121,10 @@ public class LampActivity extends Activity implements OnTaskListener {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
  
-        case R.id.menu_settings:
-            Intent settingsIntent = new Intent(this, LampSettingsActivity.class);
-            startActivityForResult(settingsIntent, RESULT_SETTINGS);
-            break;
+//        case R.id.menu_settings:
+//            Intent settingsIntent = new Intent(this, LampSettingsActivity.class);
+//            startActivityForResult(settingsIntent, RESULT_SETTINGS);
+//            break;
  
         case R.id.menu_test:
     		launchHttpTask();
@@ -390,16 +390,20 @@ public class LampActivity extends Activity implements OnTaskListener {
 	}
 	
 	private void launchHttpTask() {
-		String ip = cUdp.getLampiIp();
-		
-		if(ip == null) {
-			//new HttpNotifyTask().execute("192.168.1.2");
-			icLocation.setImageResource(R.drawable.ic_location_off);
-			Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
+		if(cUdp == null) {
+			launchUdpTask();
 		} else {
-			new HttpNotifyTask().execute(cUdp.getLampiIp());
-			icLocation.setImageResource(R.drawable.ic_location_found);
-			Toast.makeText(icLocation.getContext(), "Device found: ip address " + ip, Toast.LENGTH_LONG).show();
+			String ip = cUdp.getLampiIp();
+			
+			if(ip == null) {
+				//new HttpNotifyTask().execute("192.168.1.2");
+				icLocation.setImageResource(R.drawable.ic_location_off);
+				Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
+			} else {
+				new HttpNotifyTask().execute(ip);
+				icLocation.setImageResource(R.drawable.ic_location_found);
+				//Toast.makeText(icLocation.getContext(), "Device found: ip address " + ip, Toast.LENGTH_LONG).show();
+			}
 		}
 	}
 
