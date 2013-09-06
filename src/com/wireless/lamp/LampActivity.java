@@ -13,6 +13,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.Menu;
@@ -266,9 +267,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			
 			@Override
 			public void onClick(View v) {
-				if(cUdp.getLampiIp() == null) {
-					launchUdpTask();
-				}
+				launchUdpTask();
 			}
 			
 		});
@@ -362,8 +361,12 @@ public class LampActivity extends Activity implements OnTaskListener {
 		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
 			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
 		} else {
-			cUdp = new UdpClientTask(wifi, this);
-			cUdp.execute();
+			//if(cUdp == null)
+				cUdp = new UdpClientTask(wifi, this);
+			
+			//if(cUdp.getLampiIp() == null)
+				//if(cUdp.getStatus() == AsyncTask.Status.PENDING)
+					cUdp.execute();
 
 		}
 		
@@ -387,11 +390,16 @@ public class LampActivity extends Activity implements OnTaskListener {
 	}
 	
 	private void launchHttpTask() {
+		String ip = cUdp.getLampiIp();
 		
-		if(cUdp.getLampiIp() == null) {
-			new HttpNotifyTask().execute("192.168.1.2");
+		if(ip == null) {
+			//new HttpNotifyTask().execute("192.168.1.2");
+			icLocation.setImageResource(R.drawable.ic_location_off);
+			Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
 		} else {
 			new HttpNotifyTask().execute(cUdp.getLampiIp());
+			icLocation.setImageResource(R.drawable.ic_location_found);
+			Toast.makeText(icLocation.getContext(), "Device found: ip address " + ip, Toast.LENGTH_LONG).show();
 		}
 	}
 

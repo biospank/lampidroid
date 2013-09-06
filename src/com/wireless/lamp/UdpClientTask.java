@@ -41,11 +41,11 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 			sendDiscoveryRequest(socket);
 			listenForResponses(rcvsocket);
 		} catch (BindException be) {
-			Log.e(TAG, "Could not send discovery request", be);
+			//Log.e(TAG, "Could not send discovery request", be);
 		} catch (IOException e) {
-			Log.e(TAG, "Could not send discovery request", e);
+			//Log.e(TAG, "Could not send discovery request", e);
 		} catch (RuntimeException re) {
-			Log.e(TAG, "Could not send discovery request", re);
+			//Log.e(TAG, "Could not send discovery request", re);
 		} finally {
 			if(socket != null)
 				socket.close();
@@ -85,7 +85,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	private InetAddress getBroadcastAddress() throws IOException {
 		DhcpInfo dhcp = mWifi.getDhcpInfo();
 		if (dhcp == null) {
-			Log.d(TAG, "Could not get dhcp info");
+			//Log.d(TAG, "Could not get dhcp info");
 			return null;
 		}
 
@@ -110,12 +110,12 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 				DatagramPacket packet = new DatagramPacket(buf, buf.length);
 				socket.receive(packet);
 				String s = packet.getAddress().getHostAddress(); //new String(packet.getData(), 0, packet.getLength());
-				Log.d(TAG, "Received response " + s);
+				//Log.d(TAG, "Received response " + s);
 				setLampiIp(s);
 				
 			}
 		} catch (SocketTimeoutException e) {
-			Log.d(TAG, "Receive timed out");
+			//Log.d(TAG, "Receive timed out");
 		}
 	}
 
