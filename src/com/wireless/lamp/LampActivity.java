@@ -3,6 +3,7 @@ package com.wireless.lamp;
 import java.util.Calendar;
 import android.app.Activity;
 import android.app.AlarmManager;
+import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -131,6 +132,14 @@ public class LampActivity extends Activity implements OnTaskListener {
 
             break;
  
+        case R.id.menu_about:
+        	AlertDialog.Builder builder=new AlertDialog.Builder(this);
+        	builder.setIcon(R.drawable.ic_launcher);
+        	builder.setTitle("About");
+        	builder.setMessage("Software developed by biospank\nPlease conctact lampwireless for more informations.");
+        	builder.setCancelable(true);
+        	builder.create();
+        	builder.show();
         }
  
 		return true;
