@@ -61,7 +61,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			if(intent.getAction().equals(SMS_LAMP_ACTION)) {
 				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
 				if(notify) {
-					launchHttpTask();
+					launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
 				}
 				
 			}
@@ -69,7 +69,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			if(intent.getAction().equals(ALARM_LAMP_ACTION)) {
 				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 				if(notify) {
-					launchHttpTask();
+					launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
 				}
 				
 			}
@@ -128,7 +128,12 @@ public class LampActivity extends Activity implements OnTaskListener {
 //            break;
  
         case R.id.menu_test:
-    		launchHttpTask();
+    		launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
+
+            break;
+ 
+        case R.id.menu_reset:
+    		launchHttpTask(HttpNotifyTask.LAMPI_RESET_ACTION);
 
             break;
  
@@ -398,7 +403,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 		alarmManager.cancel(alarmIntent);
 	}
 	
-	private void launchHttpTask() {
+	private void launchHttpTask(int type) {
 		if(cUdp == null) {
 			launchUdpTask();
 		} else {
@@ -409,7 +414,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 				icLocation.setImageResource(R.drawable.ic_location_off);
 				Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
 			} else {
-				new HttpNotifyTask().execute(ip);
+				new HttpNotifyTask(type).execute(ip);
 				icLocation.setImageResource(R.drawable.ic_location_found);
 				//Toast.makeText(icLocation.getContext(), "Device found: ip address " + ip, Toast.LENGTH_LONG).show();
 			}

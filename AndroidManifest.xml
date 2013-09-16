@@ -6,7 +6,7 @@
 
     <uses-sdk
         android:minSdkVersion="9"
-        android:targetSdkVersion="17" />
+        android:targetSdkVersion="18" />
 
     <uses-feature android:name="android.hardware.wifi" />
     <uses-feature
@@ -22,7 +22,6 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:permission="android.permission.ACCESS_WIFI_STATE"
         android:theme="@style/AppTheme" >
         <activity
             android:name="com.wireless.lamp.LampActivity"
@@ -41,8 +40,8 @@
             </intent-filter>
         </receiver>
         <service android:enabled="true" android:name=".AudioCaptureService"></service>
-        <activity android:name=".LampSettingsActivity" />
-        <activity android:name=".TimePickerPreference" />
+        <!-- activity android:name=".LampSettingsActivity" />
+        <activity android:name=".TimePickerPreference" /-->
    	</application>
 
 </manifest>

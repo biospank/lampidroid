@@ -28,17 +28,19 @@ public final class R {
         public static final int ic_location_found=0x7f020004;
         public static final int ic_location_off=0x7f020005;
         public static final int ic_location_search=0x7f020006;
-        public static final int ic_menu_test=0x7f020007;
-        public static final int ic_sms=0x7f020008;
-        public static final int ic_sms_active=0x7f020009;
-        public static final int section_border=0x7f02000a;
-        public static final int summary_border=0x7f02000b;
+        public static final int ic_menu_reset=0x7f020007;
+        public static final int ic_menu_test=0x7f020008;
+        public static final int ic_sms=0x7f020009;
+        public static final int ic_sms_active=0x7f02000a;
+        public static final int section_border=0x7f02000b;
+        public static final int summary_border=0x7f02000c;
     }
     public static final class id {
         public static final int icAlarm=0x7f090006;
         public static final int icLocation=0x7f090000;
         public static final int icSms=0x7f090003;
-        public static final int menu_about=0x7f09000a;
+        public static final int menu_about=0x7f09000b;
+        public static final int menu_reset=0x7f09000a;
         public static final int menu_test=0x7f090009;
         public static final int tableRow1=0x7f090001;
         public static final int tableRow2=0x7f090004;
@@ -61,7 +63,8 @@ public final class R {
         public static final int audiosensor=0x7f060005;
         public static final int hello_world=0x7f060002;
         public static final int inboundsms=0x7f060004;
-        public static final int menu_about=0x7f060016;
+        public static final int menu_about=0x7f060017;
+        public static final int menu_reset=0x7f060016;
         public static final int menu_scan=0x7f060014;
         public static final int menu_settings=0x7f06000c;
         public static final int menu_test=0x7f060015;
