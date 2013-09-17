@@ -72,6 +72,12 @@ public class LampActivity extends Activity implements OnTaskListener {
 					launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
 				}
 				
+	            long timeSet = sharedPrefs.getLong(LampSettingsActivity.ALARM_KEY_PREF, 0);
+	    		long timeAlarm = LampUtil.getTimeAlarmFor(timeSet);
+	    		activateAlarm(pendingAlarm, timeAlarm);
+				String formattedDate = LampUtil.getFullFormattedDateFor(timeAlarm, getApplicationContext());
+				tvAlarm.setText(LampUtil.getAlarmSummarySpanText(formattedDate), BufferType.SPANNABLE);
+		        
 			}
 				
 		}
