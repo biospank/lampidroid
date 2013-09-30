@@ -16,11 +16,12 @@ public class LampUtil {
 		long timeAlarm;
 		if(currentTime >= timeSet){
 			Calendar c = Calendar.getInstance();
-			if(timeSet > 0) {
-    			c.setTimeInMillis(timeSet);
-			} else {
-    			c.setTimeInMillis(currentTime);
-			}
+//			if(timeSet > 0) {
+//    			c.setTimeInMillis(timeSet);
+//			} else {
+//    			c.setTimeInMillis(currentTime);
+//			}
+			c.setTimeInMillis(currentTime);
 			c.add(Calendar.DATE, 1);
 			timeAlarm = c.getTimeInMillis();
 		} else {
@@ -34,11 +35,12 @@ public class LampUtil {
     	long currentTime = System.currentTimeMillis();
 		Calendar c = Calendar.getInstance();
 		if(currentTime >= timeSet){
-			if(timeSet > 0) {
-    			c.setTimeInMillis(timeSet);
-			} else {
-    			c.setTimeInMillis(currentTime);
-			}
+//			if(timeSet > 0) {
+//    			c.setTimeInMillis(timeSet);
+//			} else {
+//    			c.setTimeInMillis(currentTime);
+//			}
+			c.setTimeInMillis(currentTime);
 			c.add(Calendar.DATE, 1);
 		} else {
 			c.setTimeInMillis(timeSet);

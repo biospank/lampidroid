@@ -4,6 +4,7 @@ import java.util.Calendar;
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
@@ -17,6 +18,8 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -147,7 +150,7 @@ public class LampActivity extends Activity implements OnTaskListener {
         	AlertDialog.Builder builder=new AlertDialog.Builder(this);
         	builder.setIcon(R.drawable.ic_launcher);
         	builder.setTitle("About");
-        	builder.setMessage("Software developed by biospank\nPlease conctact lampwireless for more informations.");
+        	builder.setMessage("Software developed by lampiwireless\nPlease conctact lampiwireless@gmail.com for more informations.");
         	builder.setCancelable(true);
         	builder.create();
         	builder.show();
@@ -191,6 +194,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 		//registerReceiver(intentReceiver, intentFilter);
 		// gestione audio
 		// startService(audioCaptureIntent);
+		showNotificationIcon(false);
 		super.onResume();
 		
 	}
@@ -200,6 +204,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 		unregisterReceiver(intentReceiver);
 		//unregisterReceiver(alarmReceiver);
 		//deactivateAlarm(pendingAlarm);
+		showNotificationIcon(false);
 		super.onDestroy();
 	}
 
@@ -208,10 +213,47 @@ public class LampActivity extends Activity implements OnTaskListener {
 		//unregisterReceiver(intentReceiver);
 		// gestione audio
 		// stopService(audioCaptureIntent);
+		if(!isFinishing())
+			showNotificationIcon(true);
 		super.onPause();
 		
 	}
 
+	protected void showNotificationIcon(boolean show) {
+		NotificationManager mNotificationManager =
+			    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+		int mId = 999;
+		if(show) {
+			NotificationCompat.Builder mBuilder =
+			        new NotificationCompat.Builder(this)
+			        .setSmallIcon(R.drawable.ic_notification)
+			        .setContentTitle("Lamp")
+			        .setContentText("Tap to show.");
+			// Creates an explicit intent for an Activity in your app
+			Intent resultIntent = new Intent(this, LampActivity.class);
+
+			// The stack builder object will contain an artificial back stack for the
+			// started Activity.
+			// This ensures that navigating backward from the Activity leads out of
+			// your application to the Home screen.
+			TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+			// Adds the back stack for the Intent (but not the Intent itself)
+			stackBuilder.addParentStack(LampActivity.class);
+			// Adds the Intent that starts the Activity to the top of the stack
+			stackBuilder.addNextIntent(resultIntent);
+			PendingIntent resultPendingIntent =
+			        stackBuilder.getPendingIntent(
+			            0,
+			            PendingIntent.FLAG_UPDATE_CURRENT
+			        );
+			mBuilder.setContentIntent(resultPendingIntent);
+			// mId allows you to update the notification later on.
+			mNotificationManager.notify(mId , mBuilder.build());
+		} else {
+			mNotificationManager.cancel(mId);
+		}
+	}
+	
 	protected void initializeView() {
 //		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		icLocation = (ImageView) findViewById(R.id.icLocation);

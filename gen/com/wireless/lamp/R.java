@@ -30,10 +30,11 @@ public final class R {
         public static final int ic_location_search=0x7f020006;
         public static final int ic_menu_reset=0x7f020007;
         public static final int ic_menu_test=0x7f020008;
-        public static final int ic_sms=0x7f020009;
-        public static final int ic_sms_active=0x7f02000a;
-        public static final int section_border=0x7f02000b;
-        public static final int summary_border=0x7f02000c;
+        public static final int ic_notification=0x7f020009;
+        public static final int ic_sms=0x7f02000a;
+        public static final int ic_sms_active=0x7f02000b;
+        public static final int section_border=0x7f02000c;
+        public static final int summary_border=0x7f02000d;
     }
     public static final class id {
         public static final int icAlarm=0x7f090006;
