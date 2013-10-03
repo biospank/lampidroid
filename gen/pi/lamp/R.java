@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package com.wireless.lamp;
+package pi.lamp;
 
 public final class R {
     public static final class attr {

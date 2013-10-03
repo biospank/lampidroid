@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.wireless.lamp"
+    package="pi.lamp"
     android:versionCode="1"
     android:versionName="1.0" >
 
@@ -24,7 +24,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.wireless.lamp.LampActivity"
+            android:name="pi.lamp.LampActivity"
             android:label="@string/app_name"
     		android:launchMode="singleTask" >
             <intent-filter>
@@ -34,12 +34,12 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".SmsReceiver" >
+        <receiver android:name="pi.lamp.SmsReceiver" >
             <intent-filter>
                 <action android:name="android.provider.Telephony.SMS_RECEIVED" />
             </intent-filter>
         </receiver>
-        <service android:enabled="true" android:name=".AudioCaptureService"></service>
+        <service android:enabled="true" android:name="pi.lamp.AudioCaptureService"></service>
         <!-- activity android:name=".LampSettingsActivity" />
         <activity android:name=".TimePickerPreference" /-->
    	</application>

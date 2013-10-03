@@ -1,11 +1,15 @@
 /**
  * 
  */
-package com.wireless.lamp;
+package pi.lamp;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import pi.lamp.R;
+
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;

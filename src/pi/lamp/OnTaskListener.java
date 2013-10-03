@@ -1,4 +1,4 @@
-package com.wireless.lamp;
+package pi.lamp;
 
 public interface OnTaskListener {
 	void onTaskBegin();

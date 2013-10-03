@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.wireless.lamp;
+package pi.lamp;
 
 import java.io.IOException;
 

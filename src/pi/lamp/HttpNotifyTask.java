@@ -1,4 +1,4 @@
-package com.wireless.lamp;
+package pi.lamp;
 
 import java.io.IOException;
 import org.apache.http.client.ClientProtocolException;

@@ -12,7 +12,7 @@
 	</PreferenceCategory>
 
     <PreferenceCategory android:title="@string/alarm" android:key="pref_key_alarm_settings">
-		<com.wireless.lamp.TimePickerPreference
+		<pi.lamp.TimePickerPreference
 		    android:dialogIcon="@drawable/ic_launcher" 
 		    android:dialogTitle="@string/pref_title_alarm" 
 		    android:dialogMessage="Set alert at" 

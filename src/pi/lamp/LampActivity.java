@@ -1,6 +1,10 @@
-package com.wireless.lamp;
+package pi.lamp;
 
 import java.util.Calendar;
+
+import pi.lamp.R;
+
+
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;

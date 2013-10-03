@@ -1,4 +1,4 @@
-package com.wireless.lamp;
+package pi.lamp;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

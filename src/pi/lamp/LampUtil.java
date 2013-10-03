@@ -1,4 +1,4 @@
-package com.wireless.lamp;
+package pi.lamp;
 
 import java.text.DateFormat;
 import java.util.Calendar;

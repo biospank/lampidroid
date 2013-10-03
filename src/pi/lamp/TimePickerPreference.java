@@ -1,6 +1,9 @@
-package com.wireless.lamp;
+package pi.lamp;
 
 import java.util.Calendar;
+
+import pi.lamp.R;
+
 
 import android.content.Context;
 import android.content.DialogInterface;
