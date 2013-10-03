@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,7 +30,7 @@ import android.widget.TimePicker;
 import android.widget.TextView.BufferType;
 import android.widget.Toast;
 
-public class LampActivity extends Activity implements OnTaskListener {
+public class LampActivity extends ActionBarActivity implements OnTaskListener {
 	
 	public static final String SMS_LAMP_ACTION = "SMS_LAMP_ACTION";
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
