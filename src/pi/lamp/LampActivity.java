@@ -1,10 +1,7 @@
 package pi.lamp;
 
 import java.util.Calendar;
-
 import pi.lamp.R;
-
-
 import android.app.Activity;
 import android.app.AlarmManager;
 import android.app.AlertDialog;
@@ -27,6 +24,7 @@ import android.support.v4.app.TaskStackBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.accessibility.AccessibilityEvent;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -36,9 +34,11 @@ import android.widget.Toast;
 public class LampActivity extends Activity implements OnTaskListener {
 	
 	public static final String SMS_LAMP_ACTION = "SMS_LAMP_ACTION";
+	public static final String CHAT_LAMP_ACTION = "CHAT_LAMP_ACTION";
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
 	private static final int RESULT_SETTINGS = 1;
     private UdpClientTask cUdp;
+//    private ChatNotificationService sCn;
 	private ImageView icLocation;
 	private ImageView icSms;
 	private ImageView icAlarm;
@@ -70,6 +70,14 @@ public class LampActivity extends Activity implements OnTaskListener {
 				if(notify) {
 					launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
 				}
+				
+			}
+
+			if(intent.getAction().equals(CHAT_LAMP_ACTION)) {
+//				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
+//				if(notify) {
+					launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
+//				}
 				
 			}
 
@@ -121,6 +129,9 @@ public class LampActivity extends Activity implements OnTaskListener {
 		showUserSettings();
 		
 		launchUdpTask();
+		
+//		Intent i = new Intent(this, ChatNotificationService.class);
+//        startService(i);
 
 	}
 
@@ -274,10 +285,12 @@ public class LampActivity extends Activity implements OnTaskListener {
 		// gestione audio
 //		chkAudio = (CheckBox) findViewById(R.id.chkAudio);
 //		audioCaptureIntent =  new Intent(this, AudioCaptureService.class);
+//        sCn = new ChatNotificationService(this);
 
 		intentFilter = new IntentFilter();
 		intentFilter.addAction(SMS_LAMP_ACTION);
 		intentFilter.addAction(ALARM_LAMP_ACTION);
+		intentFilter.addAction(CHAT_LAMP_ACTION);
 		
 		registerReceiver(intentReceiver, intentFilter);
 
@@ -495,5 +508,11 @@ public class LampActivity extends Activity implements OnTaskListener {
         }
         
     }
+
+//	@Override
+//	public void onChatEventTriggered(AccessibilityEvent evt) {
+//		
+//		
+//	}
 	
 }
