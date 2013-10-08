@@ -53,6 +53,7 @@ public class ChatNotificationService extends AccessibilityService {
     		"jp.naver.line.android", 
     		"com.facebook.orca", 
     		"com.oovoo",
+    		"com.vpho",
     		"com.twitter.android",
     		"com.camshare.camfrog.android"
 	    };

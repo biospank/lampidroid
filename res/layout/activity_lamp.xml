@@ -26,7 +26,25 @@
         android:layout_weight="2" >
 
         <TableRow
-            android:id="@+id/tableRow1"
+            android:id="@+id/chatRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/tvChat"
+                style="@style/Summary" />
+
+            <ImageView
+                android:id="@+id/icChat"
+                style="@style/Function"
+                android:src="@drawable/ic_chat" />
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/smsRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -44,7 +62,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/tableRow2"
+            android:id="@+id/alarmRow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -59,6 +77,7 @@
                 style="@style/Function"
                 android:src="@drawable/ic_alarm" />
         </TableRow>
+
     </TableLayout>
 
     <LinearLayout

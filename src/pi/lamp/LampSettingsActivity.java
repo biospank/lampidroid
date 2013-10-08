@@ -28,6 +28,7 @@ public class LampSettingsActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
 	private static final int PICK_CONTACT = 1001;
+	public static final String CHAT_KEY_PREF = "pref_key_chat";
 	public static final String SMS_KEY_PREF = "pref_key_inbound_sms";
 	public static final String ALARM_KEY_PREF = "pref_key_alarm";
 	public static final String ALARM_KEY_ACTIVE = "key_alarm_active";

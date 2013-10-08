@@ -40,9 +40,11 @@ public class LampActivity extends Activity implements OnTaskListener {
     private UdpClientTask cUdp;
 //    private ChatNotificationService sCn;
 	private ImageView icLocation;
+	private ImageView icChat;
 	private ImageView icSms;
 	private ImageView icAlarm;
 	private TextView tvAlarm;
+	private TextView tvChat;
 	private TextView tvSms;
 	// gestione audio
 	// private CheckBox chkAudio;
@@ -74,10 +76,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 			}
 
 			if(intent.getAction().equals(CHAT_LAMP_ACTION)) {
-//				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
-//				if(notify) {
+				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.CHAT_KEY_PREF, false);
+				if(notify) {
 					launchHttpTask(HttpNotifyTask.LAMPI_NOTIFY_ACTION);
-//				}
+				}
 				
 			}
 
@@ -201,6 +203,7 @@ public class LampActivity extends Activity implements OnTaskListener {
         
         showIconStateFor(R.id.icAlarm);
         showIconStateFor(R.id.icSms);
+        showIconStateFor(R.id.icChat);
 		
 	}
 
@@ -273,14 +276,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 //		btnRefresh = (Button) findViewById(R.id.btnRefresh);
 		icLocation = (ImageView) findViewById(R.id.icLocation);
 		icSms = (ImageView) findViewById(R.id.icSms);
+		icChat = (ImageView) findViewById(R.id.icChat);
 		icAlarm = (ImageView) findViewById(R.id.icAlarm);
 		tvAlarm = (TextView) findViewById(R.id.tvAlarm);
+		tvChat = (TextView) findViewById(R.id.tvChat);
 		tvSms = (TextView) findViewById(R.id.tvSms);
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
         showIconStateFor(R.id.icAlarm);
         showIconStateFor(R.id.icSms);
+        showIconStateFor(R.id.icChat);
 		
 		// gestione audio
 //		chkAudio = (CheckBox) findViewById(R.id.chkAudio);
@@ -297,6 +303,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 		alarmIntent = new Intent(ALARM_LAMP_ACTION);
 		pendingAlarm = PendingIntent.getBroadcast(this, 0, alarmIntent, 0);
 
+		icChat.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				changeStateFor(R.id.icChat, null);
+			}
+			
+		});
+		
 		icSms.setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -355,10 +370,24 @@ public class LampActivity extends Activity implements OnTaskListener {
 	
 	private void changeStateFor(int resId, Object extra) {
 		Editor editor = sharedPrefs.edit();
+		String formattedText;
 		
 		switch (resId) {
+		case R.id.icChat:
+			if(sharedPrefs.getBoolean(LampSettingsActivity.CHAT_KEY_PREF, false)) {
+				editor.putBoolean(LampSettingsActivity.CHAT_KEY_PREF, false);
+				formattedText = "Chat alert off!";
+			} else {
+				editor.putBoolean(LampSettingsActivity.CHAT_KEY_PREF, true);
+				formattedText = "Chat alert on!";
+			}
+
+			tvChat.setText(LampUtil.getChatSummarySpanText(formattedText));
+			Toast.makeText(icChat.getContext(), formattedText, Toast.LENGTH_SHORT).show();
+			
+			break;
+
 		case R.id.icSms:
-			String formattedText;
 			if(sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false)) {
 				editor.putBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
 				formattedText = "Sms alert off!";
@@ -407,6 +436,14 @@ public class LampActivity extends Activity implements OnTaskListener {
 	
 	private void showIconStateFor(int resId) {
 		switch (resId) {
+		case R.id.icChat:
+			if(sharedPrefs.getBoolean(LampSettingsActivity.CHAT_KEY_PREF, false)) {
+				icChat.setImageResource(R.drawable.ic_chat_active);
+			} else {
+				icChat.setImageResource(R.drawable.ic_chat);
+			}
+			break;
+
 		case R.id.icSms:
 			if(sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false)) {
 //				icSms.setBackgroundResource(R.drawable.summary_border);
@@ -488,7 +525,17 @@ public class LampActivity extends Activity implements OnTaskListener {
 
 	private void showUserSettings() {
  
-        boolean smsActive = sharedPrefs.getBoolean("pref_key_inbound_sms", false);
+        boolean chatActive = sharedPrefs.getBoolean(LampSettingsActivity.CHAT_KEY_PREF, false);
+        
+        if(chatActive) {
+			String formattedText = "Chat alert on!";
+			tvChat.setText(LampUtil.getChatSummarySpanText(formattedText));
+        } else {
+			String formattedText = "Chat alert off!";
+			tvChat.setText(LampUtil.getSmsSummarySpanText(formattedText));
+        }
+
+        boolean smsActive = sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
         
         if(smsActive) {
 			String formattedText = "Sms alert on!";
@@ -509,10 +556,4 @@ public class LampActivity extends Activity implements OnTaskListener {
         
     }
 
-//	@Override
-//	public void onChatEventTriggered(AccessibilityEvent evt) {
-//		
-//		
-//	}
-	
 }

@@ -104,4 +104,18 @@ public class LampUtil {
         return sText;
         
 	}
+
+	public static Spannable getChatSummarySpanText(String text) {
+		
+        Spannable sText = new SpannableString(text);
+        sText.setSpan(new RelativeSizeSpan(0.8f), 0, 10, 0); 
+        sText.setSpan(new ForegroundColorSpan(Color.rgb(0, 25, 42)), 0, 10, 0);
+        sText.setSpan(new RelativeSizeSpan(1.2f), 10, text.length(), 0); 
+
+//        String strDate = "<small>" + dateformatter.format(date) + "</small> at <br />" + timeformatter.format(date);
+//        Spanned sText = Html.fromHtml(strDate);
+        
+        return sText;
+        
+	}
 }
