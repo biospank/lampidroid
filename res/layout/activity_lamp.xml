@@ -78,7 +78,24 @@
                 android:src="@drawable/ic_alarm" />
         </TableRow>
 
-    </TableLayout>
+        <TableRow
+            android:id="@+id/btRow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingTop="5dp" >
+
+            <TextView
+                android:id="@+id/tvBt"
+                style="@style/Summary" />
+
+            <ImageView
+                android:id="@+id/icBt"
+                style="@style/Function"
+                android:src="@drawable/ic_alarm" />
+        </TableRow>
+
+        </TableLayout>
 
     <LinearLayout
         style="@drawable/function_border"

@@ -1,6 +1,12 @@
 package pi.lamp;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.UUID;
+
 import pi.lamp.R;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -9,6 +15,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +30,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -36,22 +46,61 @@ public class LampActivity extends Activity implements OnTaskListener {
 	public static final String SMS_LAMP_ACTION = "SMS_LAMP_ACTION";
 	public static final String CHAT_LAMP_ACTION = "CHAT_LAMP_ACTION";
 	public static final String ALARM_LAMP_ACTION = "ALARM_LAMP_ACTION";
+	public static final String LAMP_BT_NAME = "raspberry-0";
+	public static final String LAMP_BT_ADDRESS = "00:10:60:A2:18:B9";
+    private static final UUID MY_UUID = UUID.fromString("1e0ca4ea-299d-4335-93eb-27fcfe7fa848");
 	private static final int RESULT_SETTINGS = 1;
+	private static final int REQUEST_ENABLE_BT = 200;
     private UdpClientTask cUdp;
 //    private ChatNotificationService sCn;
 	private ImageView icLocation;
 	private ImageView icChat;
 	private ImageView icSms;
 	private ImageView icAlarm;
+	private ImageView icBt;
 	private TextView tvAlarm;
 	private TextView tvChat;
 	private TextView tvSms;
+	private TextView tvBt;
+	private TextView tvFooter;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
 	
 	SharedPreferences sharedPrefs;
 
+	// gestione bluetooth
+	BluetoothAdapter btAdapter;
+	BluetoothDevice lampBtdevice;
+	
+	
+	IntentFilter btFilter;
+
+	private BroadcastReceiver btReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			
+			if(intent.getAction().equals(BluetoothDevice.ACTION_FOUND)) {
+				BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+				tvFooter.append(device.getName() + ": " + device.getAddress() + "\n");
+				if((device.getName() == LAMP_BT_NAME) || (device.getAddress() == LAMP_BT_ADDRESS))
+					lampBtdevice = device;
+			}
+
+			if(intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)) {
+
+				
+			}
+
+			if(intent.getAction().equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
+
+				btAdapter.cancelDiscovery();
+				
+			}
+
+		}
+	};
+	
 	IntentFilter intentFilter;
 	Intent alarmIntent;
 	PendingIntent pendingAlarm;
@@ -185,12 +234,29 @@ public class LampActivity extends Activity implements OnTaskListener {
         	manageUserSettings();
             showUserSettings();
             break;
+        case REQUEST_ENABLE_BT:
+        	getPairedDevices();
+        	btAdapter.startDiscovery();
+            break;
  
         }
  
     }
 
-    private void manageUserSettings() {
+    private void getPairedDevices() {
+		Set<BluetoothDevice> btDevices = btAdapter.getBondedDevices();
+		if(btDevices.size() > 0) {
+			tvFooter.append("Paired Devices\n");
+			for(BluetoothDevice device:btDevices) {
+				tvFooter.append(device.getName() + ": " + device.getAddress() + "\n");
+			}
+			tvFooter.append("Discovered Devices\n");
+			
+		}
+		
+	}
+
+	private void manageUserSettings() {
 //    	long currentTime = System.currentTimeMillis();
 		boolean activeAlarm = sharedPrefs.getBoolean(LampSettingsActivity.ALARM_KEY_ACTIVE, false);
 
@@ -220,6 +286,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	@Override
 	protected void onDestroy() {
 		unregisterReceiver(intentReceiver);
+		unregisterReceiver(btReceiver);
 		//unregisterReceiver(alarmReceiver);
 		//deactivateAlarm(pendingAlarm);
 		showNotificationIcon(false);
@@ -278,9 +345,28 @@ public class LampActivity extends Activity implements OnTaskListener {
 		icSms = (ImageView) findViewById(R.id.icSms);
 		icChat = (ImageView) findViewById(R.id.icChat);
 		icAlarm = (ImageView) findViewById(R.id.icAlarm);
+		icBt = (ImageView) findViewById(R.id.icBt);
 		tvAlarm = (TextView) findViewById(R.id.tvAlarm);
 		tvChat = (TextView) findViewById(R.id.tvChat);
 		tvSms = (TextView) findViewById(R.id.tvSms);
+		tvBt = (TextView) findViewById(R.id.tvBt);
+		tvFooter = (TextView) findViewById(R.id.tvFooter);
+
+		// bluetooth
+		btAdapter = BluetoothAdapter.getDefaultAdapter();
+		if (btAdapter == null) {
+		    // Device does not support Bluetooth
+			Toast.makeText(getApplicationContext(), "Device does not support Bluetooth", Toast.LENGTH_LONG).show();
+		} else {
+			if(!btAdapter.isEnabled()) {
+				Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+			    startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+			} else {
+				getPairedDevices();
+				btAdapter.startDiscovery();
+			}
+		}
+			
 		
 		sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
 		
@@ -293,6 +379,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 //		audioCaptureIntent =  new Intent(this, AudioCaptureService.class);
 //        sCn = new ChatNotificationService(this);
 
+        // gestione bluetooth
+		btFilter = new IntentFilter();
+		btFilter.addAction(BluetoothDevice.ACTION_FOUND);
+		btFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+		btFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+		
+		registerReceiver(btReceiver, btFilter);
+
+        
 		intentFilter = new IntentFilter();
 		intentFilter.addAction(SMS_LAMP_ACTION);
 		intentFilter.addAction(ALARM_LAMP_ACTION);
@@ -328,6 +423,15 @@ public class LampActivity extends Activity implements OnTaskListener {
 				changeStateFor(R.id.icAlarm, null);
 			}
 			
+		});
+		
+		icBt.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				connectBtDevice();
+			}
+
 		});
 		
 		tvAlarm.setOnClickListener(new View.OnClickListener() {
@@ -367,6 +471,100 @@ public class LampActivity extends Activity implements OnTaskListener {
 		});
 		
 	}
+	
+	private void connectBtDevice() {
+		Log.d("Connect", "connectBtDevice");
+		if(lampBtdevice != null) {
+			Log.d("Connect", "Start connecting...");
+			ConnectThread btConnect = new ConnectThread(lampBtdevice); 
+			btConnect.run();
+		}
+	}
+	
+	private class ConnectThread extends Thread {
+		private final BluetoothSocket mmSocket;
+	    private final BluetoothDevice mmDevice;
+	 
+	    public ConnectThread(BluetoothDevice device) {
+	        // Use a temporary object that is later assigned to mmSocket,
+	        // because mmSocket is final
+	        BluetoothSocket tmp = null;
+	        mmDevice = device;
+	 
+	        // Get a BluetoothSocket to connect with the given BluetoothDevice
+	        try {
+	            // MY_UUID is the app's UUID string, also used by the server code
+	            tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
+	        } catch (IOException e) { }
+	        mmSocket = tmp;
+	    }
+	 
+	    public void run() {
+	        // Cancel discovery because it will slow down the connection
+	        btAdapter.cancelDiscovery();
+	 
+	        try {
+	            // Connect the device through the socket. This will block
+	            // until it succeeds or throws an exception
+	            mmSocket.connect();
+	        } catch (IOException connectException) {
+	            // Unable to connect; close the socket and get out
+	            try {
+	                mmSocket.close();
+	            } catch (IOException closeException) { }
+	            return;
+	        }
+	 
+	        // Do work to manage the connection (in a separate thread)
+	        manageConnectedSocket(mmSocket);
+	    }
+	 
+	    /** Will cancel an in-progress connection, and close the socket */
+	    public void cancel() {
+	        try {
+	            mmSocket.close();
+	        } catch (IOException e) { }
+	    }
+	}
+	
+	private void manageConnectedSocket(BluetoothSocket btSocket) {
+		ConnectedThread btConnected = new ConnectedThread(btSocket);
+		btConnected.write("ciao".getBytes());
+		btConnected.cancel();
+	}
+	
+	private class ConnectedThread extends Thread {
+	    private final BluetoothSocket mmSocket;
+	    private final OutputStream mmOutStream;
+	 
+	    public ConnectedThread(BluetoothSocket socket) {
+	        mmSocket = socket;
+	        OutputStream tmpOut = null;
+	 
+	        // Get the input and output streams, using temp objects because
+	        // member streams are final
+	        try {
+	            tmpOut = socket.getOutputStream();
+	        } catch (IOException e) { }
+	 
+	        mmOutStream = tmpOut;
+	    }
+	 
+	    /* Call this from the main activity to send data to the remote device */
+	    public void write(byte[] bytes) {
+	        try {
+	            mmOutStream.write(bytes);
+	        } catch (IOException e) { }
+	    }
+	 
+	    /* Call this from the main activity to shutdown the connection */
+	    public void cancel() {
+	        try {
+	            mmSocket.close();
+	        } catch (IOException e) { }
+	    }
+	}
+	
 	
 	private void changeStateFor(int resId, Object extra) {
 		Editor editor = sharedPrefs.edit();
