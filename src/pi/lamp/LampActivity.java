@@ -1,5 +1,6 @@
 package pi.lamp;
 
+import java.lang.reflect.Method;
 import java.util.Calendar;
 import pi.lamp.R;
 import android.app.Activity;
@@ -63,9 +64,10 @@ public class LampActivity extends Activity implements OnTaskListener {
 //			Log.d("onReceive", intent.getAction());
 //			Log.d("onReceive", String.valueOf(intent.getAction().equals(SMS_LAMP_ACTION)));
 
-			Intent lampActivityIntent = new Intent(context, LampActivity.class);
-			lampActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			context.startActivity(lampActivityIntent);
+			// bring lamp to front
+//			Intent lampActivityIntent = new Intent(context, LampActivity.class);
+//			lampActivityIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			context.startActivity(lampActivityIntent);
 			
 			if(intent.getAction().equals(SMS_LAMP_ACTION)) {
 				boolean notify = sharedPrefs.getBoolean(LampSettingsActivity.SMS_KEY_PREF, false);
@@ -112,7 +114,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 		if(ip == null) {
 //			Log.d("task completed", "no device found!!");
 			icLocation.setImageResource(R.drawable.ic_location_off);
-			Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
+			Toast.makeText(icLocation.getContext(), "Device not found: check lamp device.", Toast.LENGTH_LONG).show();
 		} else {
 //			Log.d("task completed", "device found!!");
 			icLocation.setImageResource(R.drawable.ic_location_found);
@@ -474,19 +476,36 @@ public class LampActivity extends Activity implements OnTaskListener {
 		// Kickoff the Client
 		//Context ctx = this.getApplicationContext();
 		WifiManager wifi = (WifiManager) getSystemService(Context.WIFI_SERVICE);
-		if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
-			startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+		if(isSharingWiFiEnabled(wifi)) {
+			cUdp = new UdpClientTask(wifi, this, false);
+			cUdp.execute();
 		} else {
-			//if(cUdp == null)
-				cUdp = new UdpClientTask(wifi, this);
-			
-			//if(cUdp.getLampiIp() == null)
-				//if(cUdp.getStatus() == AsyncTask.Status.PENDING)
-					cUdp.execute();
+			if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
+				startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+			} else {
+				//if(cUdp == null)
+					cUdp = new UdpClientTask(wifi, this, true);
+				
+				//if(cUdp.getLampiIp() == null)
+					//if(cUdp.getStatus() == AsyncTask.Status.PENDING)
+						cUdp.execute();
+	
+			}
 
 		}
-		
 	}
+	
+	private boolean isSharingWiFiEnabled(WifiManager manager) {
+	    try {
+	        final Method method = manager.getClass().getDeclaredMethod("isWifiApEnabled");
+	        method.setAccessible(true); //in the case of visibility change in future APIs
+	        return (Boolean) method.invoke(manager);
+	    } catch (Throwable ignored) {
+	    
+	    }
+
+	    return false;
+	}	
 	
 	private void activateAlarm(PendingIntent alarmIntent, long time) {
 		
@@ -514,7 +533,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 			if(ip == null) {
 				//new HttpNotifyTask().execute("192.168.1.2");
 				icLocation.setImageResource(R.drawable.ic_location_off);
-				Toast.makeText(icLocation.getContext(), "Device not found: check lan cable connection on lamp device.", Toast.LENGTH_LONG).show();
+				Toast.makeText(icLocation.getContext(), "Device not found: check lamp device.", Toast.LENGTH_LONG).show();
 			} else {
 				new HttpNotifyTask(type).execute(ip);
 				icLocation.setImageResource(R.drawable.ic_location_found);

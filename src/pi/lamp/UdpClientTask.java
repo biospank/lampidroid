@@ -5,7 +5,12 @@ import java.net.BindException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.Enumeration;
+
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
@@ -20,13 +25,15 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	private static final int TIMEOUT_RESPONSE = 2000;
 	private WifiManager mWifi;
 	private String lampiIp;
+	private boolean wifiEnabled;
 	private OnTaskListener listener;
 	private DatagramSocket socket;
 	private DatagramSocket rcvsocket;
 
-	UdpClientTask(WifiManager wifi, OnTaskListener listener) {
+	UdpClientTask(WifiManager wifi, OnTaskListener listener, boolean wifiEnabled) {
 	  mWifi = wifi;
 	  this.listener = listener;
+	  this.wifiEnabled = wifiEnabled;
 	}
 
 	@Override
@@ -71,9 +78,16 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	 */
 	private void sendDiscoveryRequest(DatagramSocket socket) throws IOException {
 		String data = new String(UDP_STRING_REQUEST);
+		
+		InetAddress bcAddress = null;
+		
+		if(this.wifiEnabled)
+			bcAddress = getWiFiBroadcastAddress();
+		else
+			bcAddress = getTetheringBroadcastAddress();
 
 		DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
-				getBroadcastAddress(), SERVER_PORT);
+				bcAddress, SERVER_PORT);
 		socket.send(packet);
 	}
 
@@ -82,7 +96,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	 * to 255.255.255.255, it never gets sent. I guess this has something to do
 	 * with the mobile network not wanting to do broadcast.
 	 */
-	private InetAddress getBroadcastAddress() throws IOException {
+	private InetAddress getWiFiBroadcastAddress() throws IOException {
 		DhcpInfo dhcp = mWifi.getDhcpInfo();
 		if (dhcp == null) {
 			//Log.d(TAG, "Could not get dhcp info");
@@ -96,6 +110,24 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		return InetAddress.getByAddress(quads);
 	}
 
+	private InetAddress getTetheringBroadcastAddress() throws SocketException {
+		InetAddress found_bcast_address = null;
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
+		while (niEnum.hasMoreElements()) {
+			NetworkInterface ni = niEnum.nextElement();
+			if (!ni.isLoopback() && ni.getDisplayName().contains("wl")) {
+				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
+
+					found_bcast_address = interfaceAddress.getBroadcast();
+
+				}
+			}
+		}
+
+		return found_bcast_address;
+	}
+	
 	/**
 	 * Listen on socket for responses, timing out after TIMEOUT_MS
 	 * 
