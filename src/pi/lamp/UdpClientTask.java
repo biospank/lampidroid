@@ -82,9 +82,9 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		InetAddress bcAddress = null;
 		
 		if(this.wifiEnabled)
-			bcAddress = getWiFiBroadcastAddress();
+			bcAddress = getBroadcastAddress();
 		else
-			bcAddress = getTetheringBroadcastAddress();
+			bcAddress = getBroadcastAddress();
 
 		DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
 				bcAddress, SERVER_PORT);
@@ -117,6 +117,25 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		while (niEnum.hasMoreElements()) {
 			NetworkInterface ni = niEnum.nextElement();
 			if (!ni.isLoopback() && ni.getDisplayName().contains("wl")) {
+				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
+
+					found_bcast_address = interfaceAddress.getBroadcast();
+
+				}
+			}
+		}
+
+		return found_bcast_address;
+	}
+	
+	private InetAddress getBroadcastAddress() throws SocketException {
+		InetAddress found_bcast_address = null;
+		System.setProperty("java.net.preferIPv4Stack", "true");
+		Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
+		while (niEnum.hasMoreElements()) {
+			NetworkInterface ni = niEnum.nextElement();
+			// wifi use eth interface while tethering use wlan
+			if (!ni.isLoopback() && (ni.getDisplayName().contains("eth") || ni.getDisplayName().contains("wl"))) {
 				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
 
 					found_bcast_address = interfaceAddress.getBroadcast();
