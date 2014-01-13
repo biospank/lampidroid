@@ -169,7 +169,7 @@ public class LampActivity extends Activity implements OnTaskListener {
         	AlertDialog.Builder builder=new AlertDialog.Builder(this);
         	builder.setIcon(R.drawable.ic_launcher);
         	builder.setTitle("About");
-        	builder.setMessage("Software developed by lampiwireless\nPlease conctact lampiwireless@gmail.com for more informations.");
+        	builder.setMessage("Lamp v. 1.2");
         	builder.setCancelable(true);
         	builder.create();
         	builder.show();
