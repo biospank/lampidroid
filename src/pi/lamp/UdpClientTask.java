@@ -9,6 +9,7 @@ import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.util.ArrayList;
 import java.util.Enumeration;
 
 import android.net.DhcpInfo;
@@ -79,16 +80,21 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	private void sendDiscoveryRequest(DatagramSocket socket) throws IOException {
 		String data = new String(UDP_STRING_REQUEST);
 		
-		InetAddress bcAddress = null;
+		ArrayList<InetAddress> foundBcastAddresses = null;
 		
-		if(this.wifiEnabled)
-			bcAddress = getBroadcastAddress();
-		else
-			bcAddress = getBroadcastAddress();
+//		if(this.wifiEnabled)
+//			bcAddress = getBroadcastAddress();
+//		else
+//			bcAddress = getBroadcastAddress();
+		
+		foundBcastAddresses = getBroadcastAddresses();
+		
+		for (InetAddress bcAddress : foundBcastAddresses) {
+			DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
+					bcAddress, SERVER_PORT);
+			socket.send(packet);
+		}
 
-		DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
-				bcAddress, SERVER_PORT);
-		socket.send(packet);
 	}
 
 	/**
@@ -128,23 +134,22 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		return found_bcast_address;
 	}
 	
-	private InetAddress getBroadcastAddress() throws SocketException {
-		InetAddress found_bcast_address = null;
+	private ArrayList<InetAddress> getBroadcastAddresses() throws SocketException {
+		ArrayList<InetAddress> foundBcastAddresses = new ArrayList<InetAddress>();
 		System.setProperty("java.net.preferIPv4Stack", "true");
 		Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
 		while (niEnum.hasMoreElements()) {
 			NetworkInterface ni = niEnum.nextElement();
-			// wifi use eth interface while tethering use wlan
-			if (!ni.isLoopback() && (ni.getDisplayName().contains("eth") || ni.getDisplayName().contains("wl"))) {
+			if (!ni.isLoopback()) {
 				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
 
-					found_bcast_address = interfaceAddress.getBroadcast();
+					foundBcastAddresses.add(interfaceAddress.getBroadcast());
 
 				}
 			}
 		}
 
-		return found_bcast_address;
+		return foundBcastAddresses;
 	}
 	
 	/**
