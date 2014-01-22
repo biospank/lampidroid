@@ -1,7 +1,14 @@
 package pi.lamp;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.InterfaceAddress;
+import java.net.NetworkInterface;
 import java.util.Calendar;
+import java.util.Enumeration;
+import java.util.List;
+
 import pi.lamp.R;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -12,6 +19,7 @@ import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
@@ -20,6 +28,8 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.view.Menu;
@@ -47,6 +57,7 @@ public class LampActivity extends Activity implements OnTaskListener {
 	private TextView tvAlarm;
 	private TextView tvChat;
 	private TextView tvSms;
+	private TextView tvFooter;
 	// gestione audio
 	// private CheckBox chkAudio;
 	//private Intent audioCaptureIntent;
@@ -481,7 +492,14 @@ public class LampActivity extends Activity implements OnTaskListener {
 			cUdp.execute();
 		} else {
 			if(wifi.getWifiState() == WifiManager.WIFI_STATE_DISABLED) {
-				startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+				pickConnectionDialog();
+//				if(sharedPrefs.getInt(LampSettingsActivity.CONNECT_KEY_PREF, 0) == 0) {
+//					startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+//				} else {
+//					Intent tetherSettings = new Intent();
+//					tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+//					startActivity(tetherSettings);
+//				}
 			} else {
 				//if(cUdp == null)
 					cUdp = new UdpClientTask(wifi, this, true);
@@ -493,6 +511,36 @@ public class LampActivity extends Activity implements OnTaskListener {
 			}
 
 		}
+	}
+	
+	private void pickConnectionDialog() {
+    	String[] items = {"Wi-Fi", "Tethering"}; 
+		
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Pick your connection")
+    	.setItems(items, new DialogInterface.OnClickListener() {
+	           public void onClick(DialogInterface dialog, int which) {
+	           // The 'which' argument contains the index position
+	           // of the selected item
+	        	   switch (which) {
+					case 0:
+						startActivity(new Intent(WifiManager.ACTION_PICK_WIFI_NETWORK));
+						break;
+					case 1:
+						Intent tetherSettings = new Intent();
+						tetherSettings.setClassName("com.android.settings", "com.android.settings.TetherSettings");
+						startActivity(tetherSettings);
+						break;
+					default:
+						break;
+					}
+	           }
+		    });
+        builder.show();
+        
+//		// Create an instance of the dialog fragment and show it
+//		ConnectionDialogFragment dialog = new ConnectionDialogFragment();
+//        dialog.show(getFragmentManager(), "ConnectionDialogFragment");
 	}
 	
 	private boolean isSharingWiFiEnabled(WifiManager manager) {
@@ -574,5 +622,11 @@ public class LampActivity extends Activity implements OnTaskListener {
         }
         
     }
+
+//	@Override
+//	public void onDialogItemClick(int which) {
+//		
+//		
+//	}
 
 }

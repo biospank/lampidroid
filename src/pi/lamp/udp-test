@@ -1,0 +1,146 @@
+	/**
+	 * Send a broadcast UDP packet containing a request for boxee services to
+	 * announce themselves.
+	 * 
+	 * @throws IOException
+	 */
+	private void sendDiscoveryRequest(DatagramSocket socket) throws IOException {
+		String data = new String(UDP_STRING_REQUEST);
+		
+		ArrayList<InetAddress> foundBcastAddresses = null;
+		
+//		InetAddress bcAddress;
+//		
+//		if(this.wifiEnabled)
+//			bcAddress = getWiFiBroadcastAddress();
+//		else
+//			bcAddress = getTetheringBroadcastAddress();
+//		
+//		DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
+//				bcAddress, SERVER_PORT);
+//		socket.send(packet);
+
+		foundBcastAddresses = getBroadcastAddresses();
+
+//		foundBcastAddresses = getBroadcasts(getIpAddress());
+		
+		for (InetAddress bcAddress : foundBcastAddresses) {
+			DatagramPacket packet = new DatagramPacket(data.getBytes(), data.length(),
+					bcAddress, SERVER_PORT);
+			socket.send(packet);
+		}
+
+	}
+
+
+
+//	private InetAddress getWiFiBroadcastAddress() throws IOException {
+//		DhcpInfo dhcp = mWifi.getDhcpInfo();
+//		if (dhcp == null) {
+//			//Log.d(TAG, "Could not get dhcp info");
+//			return null;
+//		}
+//
+//		int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
+//		byte[] quads = new byte[4];
+//		for (int k = 0; k < 4; k++)
+//			quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
+//		return InetAddress.getByAddress(quads);
+//	}
+//
+//	private InetAddress getIpAddress() throws SocketException {
+//		InetAddress inetAddress = null;
+//		InetAddress myAddr = null;
+//
+//		for (Enumeration<NetworkInterface> networkInterface = NetworkInterface
+//				.getNetworkInterfaces(); networkInterface.hasMoreElements();) {
+//
+//			NetworkInterface singleInterface = networkInterface.nextElement();
+//
+//			for (Enumeration<InetAddress> IpAddresses = singleInterface
+//					.getInetAddresses(); IpAddresses.hasMoreElements();) {
+//				inetAddress = IpAddresses.nextElement();
+//
+//				if (!inetAddress.isLoopbackAddress()
+//						&& (singleInterface.getDisplayName().contains("wl") || singleInterface
+//								.getDisplayName().contains("eth"))) {
+//
+//					myAddr = inetAddress;
+//				}
+//			}
+//		}
+//		return myAddr;
+//
+//	}
+
+//	private ArrayList<InetAddress> getBroadcasts(InetAddress inetAddr) throws SocketException {
+//		
+////		WifiManager wifi = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
+////		MulticastLock lock = wifi.createMulticastLock("dk.aboaya.pingpong");
+////		lock.acquire();
+////		serverSocket = new DatagramSocket(19876);
+////		serverSocket.setSoTimeout(15000); //15 sec wait for the client to connect
+////		byte[] data = new byte[UDPBatPositionUpdater.secretWord.length()]; 
+////		DatagramPacket packet = new DatagramPacket(data, data.length);
+////		serverSocket.receive(packet);
+////		Make sure to put that lock.release() in a finally block.
+////		lock.release();
+////		String s = new String(packet.getData());
+////		System.out.println(s);
+//
+////		<uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
+//		
+//		ArrayList<InetAddress> foundBcastAddresses = new ArrayList<InetAddress>();
+//		NetworkInterface temp;
+//		temp = NetworkInterface.getByInetAddress(inetAddr);
+//		List<InterfaceAddress> addresses = temp.getInterfaceAddresses();
+//
+//		for (InterfaceAddress interfaceAddress : addresses) {
+//
+//			foundBcastAddresses.add(interfaceAddress.getBroadcast());
+//			bcInterfaces.put("", 
+//					interfaceAddress.getBroadcast().toString());
+//
+//		}
+//
+//		return foundBcastAddresses;
+//	}
+//	
+//	public static InetAddress getNetworkLocalBroadcastAddressdAsInetAddress() throws IOException {
+//	    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+//	        NetworkInterface intf = en.nextElement();
+//	        if(VERSION.SDK_INT < 9) { 
+//	            if(!intf.getInetAddresses().nextElement().isLoopbackAddress()){
+//	                byte[] quads = intf.getInetAddresses().nextElement().getAddress();
+//	                quads[0] = (byte)255;
+//	                quads[1] = (byte)255;
+//	                return InetAddress.getByAddress(quads);
+//	            }
+//	        }else{
+//	            if(!intf.isLoopback()){
+//	                List<InterfaceAddress> intfaddrs = intf.getInterfaceAddresses();
+//	                return intfaddrs.get(0).getBroadcast(); //return first IP address
+//	            }
+//	        }
+//	    }
+//	    return null;
+//	}
+//
+//	private InetAddress getTetheringBroadcastAddress() throws SocketException {
+//		InetAddress found_bcast_address = null;
+//		System.setProperty("java.net.preferIPv4Stack", "true");
+//		Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
+//		while (niEnum.hasMoreElements()) {
+//			NetworkInterface ni = niEnum.nextElement();
+//			if (!ni.isLoopback() && (ni.getDisplayName().contains("wl") || ni.getDisplayName().contains("et"))) {
+//				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
+//
+//					found_bcast_address = interfaceAddress.getBroadcast();
+//
+//				}
+//			}
+//		}
+//
+//		return found_bcast_address;
+//	}
+	

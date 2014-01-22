@@ -11,25 +11,31 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
 
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
+import android.os.Build.VERSION;
 import android.util.Log;
+import android.widget.TextView;
+import android.widget.Toast;
 
-public class UdpClientTask extends AsyncTask<Void, Void, Void> {
+public class UdpClientTask extends AsyncTask<Void, Void, HashMap<String, String>> {
 
 	private static final String TAG = "Discovery";
 	private static final String UDP_STRING_REQUEST = "reply_port=12345";
 	private static final int SERVER_PORT = 1234;
-	private static final int TIMEOUT_REQUEST = 500;
-	private static final int TIMEOUT_RESPONSE = 2000;
+	private static final int TIMEOUT_REQUEST = 1000;
+	private static final int TIMEOUT_RESPONSE = 3000;
 	private WifiManager mWifi;
 	private String lampiIp;
 	private boolean wifiEnabled;
 	private OnTaskListener listener;
 	private DatagramSocket socket;
 	private DatagramSocket rcvsocket;
+	private HashMap<String, String> bcInterfaces = new HashMap<String, String>();
 
 	UdpClientTask(WifiManager wifi, OnTaskListener listener, boolean wifiEnabled) {
 	  mWifi = wifi;
@@ -38,7 +44,7 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	}
 
 	@Override
-	protected Void doInBackground(Void... arg0) {
+	protected HashMap<String, String> doInBackground(Void... arg0) {
 		try {
 			socket = new DatagramSocket(SERVER_PORT);
 			rcvsocket = new DatagramSocket(12345);
@@ -60,14 +66,20 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 			if(rcvsocket != null)
 				rcvsocket.close();
 		}
-		return null;
+		return bcInterfaces;
 	}
 	
 	protected void onPreExecute() {
 		this.listener.onTaskBegin();
 	}
 
-	protected void onPostExecute(Void arg0) {
+	protected void onPostExecute(HashMap<String, String> result) {
+//		TextView tvFooter = (TextView) ((LampActivity)this.listener).findViewById(R.id.tvFooter);
+//		tvFooter.setText("Broadcast addresses\n");
+//		for (String key : result.keySet()) {
+//			tvFooter.append(key + ": " + result.get(key) + "\n");
+//		}
+
 		this.listener.onTaskCompleted();
 	}
 
@@ -81,11 +93,6 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 		String data = new String(UDP_STRING_REQUEST);
 		
 		ArrayList<InetAddress> foundBcastAddresses = null;
-		
-//		if(this.wifiEnabled)
-//			bcAddress = getBroadcastAddress();
-//		else
-//			bcAddress = getBroadcastAddress();
 		
 		foundBcastAddresses = getBroadcastAddresses();
 		
@@ -102,38 +109,6 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 	 * to 255.255.255.255, it never gets sent. I guess this has something to do
 	 * with the mobile network not wanting to do broadcast.
 	 */
-	private InetAddress getWiFiBroadcastAddress() throws IOException {
-		DhcpInfo dhcp = mWifi.getDhcpInfo();
-		if (dhcp == null) {
-			//Log.d(TAG, "Could not get dhcp info");
-			return null;
-		}
-
-		int broadcast = (dhcp.ipAddress & dhcp.netmask) | ~dhcp.netmask;
-		byte[] quads = new byte[4];
-		for (int k = 0; k < 4; k++)
-			quads[k] = (byte) ((broadcast >> k * 8) & 0xFF);
-		return InetAddress.getByAddress(quads);
-	}
-
-	private InetAddress getTetheringBroadcastAddress() throws SocketException {
-		InetAddress found_bcast_address = null;
-		System.setProperty("java.net.preferIPv4Stack", "true");
-		Enumeration<NetworkInterface> niEnum = NetworkInterface.getNetworkInterfaces();
-		while (niEnum.hasMoreElements()) {
-			NetworkInterface ni = niEnum.nextElement();
-			if (!ni.isLoopback() && ni.getDisplayName().contains("wl")) {
-				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
-
-					found_bcast_address = interfaceAddress.getBroadcast();
-
-				}
-			}
-		}
-
-		return found_bcast_address;
-	}
-	
 	private ArrayList<InetAddress> getBroadcastAddresses() throws SocketException {
 		ArrayList<InetAddress> foundBcastAddresses = new ArrayList<InetAddress>();
 		System.setProperty("java.net.preferIPv4Stack", "true");
@@ -143,7 +118,14 @@ public class UdpClientTask extends AsyncTask<Void, Void, Void> {
 			if (!ni.isLoopback()) {
 				for (InterfaceAddress interfaceAddress : ni.getInterfaceAddresses()) {
 
-					foundBcastAddresses.add(interfaceAddress.getBroadcast());
+					InetAddress ia = interfaceAddress.getBroadcast();
+					
+					if(ia != null) {
+						foundBcastAddresses.add(interfaceAddress.getBroadcast());
+						bcInterfaces.put(ni.getDisplayName() + " - " + ni.getName(), 
+								interfaceAddress.getBroadcast().toString());
+						
+					}
 
 				}
 			}
